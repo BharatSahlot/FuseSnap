@@ -1,3 +1,4 @@
+using UnityEngine;
 using System.Collections.Generic;
 using MathNet.Numerics.LinearAlgebra;
 
@@ -35,9 +36,13 @@ namespace Game.Circuit
 					q.Enqueue(to);
 				}
 			}
-			foreach(Terminal t in terminals) t.visited = false;
-
 			DSA.UnionFind uf = new DSA.UnionFind(tn);
+			foreach(Terminal t in terminals) 
+			{
+				t.visited = false;
+				if(t.ground) uf.UnionSet(0, t.node); // all grounds should be same node
+			}
+
 			q.Enqueue(ground);
 			ground.visited = true;
 			// do a bfs and fix the nodes
@@ -57,6 +62,7 @@ namespace Game.Circuit
 				}
 			}
 			
+			// Assign nodes and the max node is the node count
 			int nodes = 0;
 			List<int> par = uf.Compress();
 			foreach(Terminal t in terminals)
@@ -82,7 +88,7 @@ namespace Game.Circuit
 			{
 				foreach(var edge in u.edgelist)
 				{
-					if(edge is Wire) continue;
+				//	if(edge is Wire) continue;
 
 					var v = edge.To == u ? edge.From : edge.To;
 					if(v.visited) continue;
@@ -113,8 +119,9 @@ namespace Game.Circuit
 			if(x.Count == 0) return;
 			foreach(Terminal t in terminals)
 			{
-				if(t.node == 0) continue;
-				t.voltage = x[t.node - 1];
+				if(t.GetInstanceID() == -1410) Debug.Log("Updated voltage");
+				if(t.node == 0) t.voltage = 0;
+				else t.voltage = x[t.node - 1];
 			}
 		}
 
@@ -127,8 +134,8 @@ namespace Game.Circuit
 				if(ground.visited) continue;
 				
 				(int nodes, int vSources, List<Terminal> terminals) = AssignNodes(ground);
-
-				foreach(var t in terminals) t.visited = false;
+				Debug.Log($"Found {nodes} nodes and {vSources} batteries.");
+				terminals.ForEach(t => t.visited = false);
 				Vector<float> x = FillMatrix(nodes, vSources, terminals);
 				Update(terminals, x);
 				terms.AddRange(terminals);

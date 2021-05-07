@@ -5,7 +5,7 @@ namespace Game.Circuit
 	public class Battery : MonoBehaviour, IEdge
 	{
 		internal int id = -1;
-		
+
 		public float voltage = 1.0f;
 		public float current = 0.0f;
 

@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Linq; // :(
-using UnityEngine;
 
 namespace Game.DSA
 {
@@ -8,14 +8,15 @@ namespace Game.DSA
 	public struct UnionFind
 	{
 		private int _n;
-		private int[] _par;
+		private List<int> _par;
 
 		public int Size { get { return _n; } }
+		public int Components { get; private set; }
 
 		public UnionFind(int sz)
 		{
-			_n = sz;
-			_par = new int[sz];	
+			_n = Components = sz;
+			_par = new List<int>(sz);	
 			for(int i = 0; i < sz; ++i)
 			{
 				_par[i] = i;
@@ -34,24 +35,24 @@ namespace Game.DSA
 			j = FindSet(j);
 
 			if(i == j) return;
-			if(i < j) _par[i] = j;
+			if(i > j) _par[i] = j;
 			else _par[j] = i;
+			Components--;
+		}
+
+		public void PathCompress()
+		{
+			for(int i = 0; i < _n; ++i) _par[i] = FindSet(i);
 		}
 
 		// not good
 		public List<int> Compress()
 		{
-			for(int i = 0; i < _n; ++i) _par[i] = FindSet(i);
-			
-			var sorted = new List<int>(_par);
+			PathCompress();
+
+			var sorted = _par;
 			sorted.Sort();
 			sorted = sorted.Distinct().ToList();
-
-		//	string s = "[ ";
-		//	sorted.ForEach((j) => { s += j.ToString() + " "; });
-		//	s += "] [ ";
-		//	_par.ToList().ForEach((j) => { s += j.ToString() + " "; });
-		//	Debug.Log(s + "]");
 
 			var res = new List<int>(_par);
 			for(int i = 0; i < _n; ++i)
@@ -60,5 +61,13 @@ namespace Game.DSA
 			}
 			return res;
 		}
-	}
+
+        public int Add()
+        {
+			_par.Add(Size);
+			_n++;
+			Components++;
+			return Size + 1;
+        }
+    }
 }

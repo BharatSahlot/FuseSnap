@@ -9,7 +9,10 @@ namespace Game.Circuit
 		public bool ground = false;
 		
 		internal bool visited = false;
-		internal int node = 0;
+		internal int id = 0;
+
+		public Circuit circuit;
+		public int Node => circuit == null ? -1 : circuit.GetNode(this);
 
 		public List<IEdge> edgelist = new List<IEdge>();
 		[HideInInspector] public float voltage = 0;
@@ -37,7 +40,7 @@ namespace Game.Circuit
 		{
 			GUIStyle style = new GUIStyle();
 			style.fontSize = 20;
-			Handles.Label(transform.position, $"{node}: {voltage}", style);
+			Handles.Label(transform.position, $"{Node}: {voltage}", style);
 		}
 #endif
 	}
