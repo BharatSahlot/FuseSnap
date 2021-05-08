@@ -11,19 +11,17 @@ namespace Game.Circuit
 
 		[SerializeField] private Sprite _onnSprite;
 
-		[field: SerializeField] public Terminal From { get; set; }
-		[field: SerializeField] public Terminal To { get; set; }
+		[field: SerializeField] public Terminal From { get; private set; }
+		[field: SerializeField] public Terminal To { get; private set; }
+        public int Id { get; set; }
 
-		private SpriteRenderer _sprite;
+        private SpriteRenderer _sprite;
 		private Sprite _offSprite;
 
 		private void Awake()
 		{
 			_sprite = GetComponent<SpriteRenderer>();
 			_offSprite = _sprite.sprite;
-
-			From.AddEdge(this);
-			To.AddEdge(this);
 		}
 
 		private void Update()

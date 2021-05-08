@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Game.Circuit 
@@ -10,11 +11,12 @@ namespace Game.Circuit
 		public Terminal terminalPrefab;
 
 		private List<Terminal> _terminals = new List<Terminal>();
+		private List<IEdge> _defaultEdges = new List<IEdge>();
 		private Terminal _selected = null, _highlighted = null;
 
 		private Camera _mainCamera = null;
-		private Solver _solver = new Solver();
 
+		// DOING Handle case of connecting to terminal of a Circuit component like Battery or Fuse.
 		private void Awake()
 		{
 			_mainCamera = Camera.main;
@@ -24,9 +26,9 @@ namespace Game.Circuit
 			GameObject[] objs = GameObject.FindGameObjectsWithTag("Terminal"); // maybe use FindObjectsOfType instead ?
 			foreach(var obj in objs) 
 			{
-				var terminal = obj.GetComponent<Terminal>();
-				_terminals.Add(terminal);
-				if(terminal.ground) _solver.grounds.Add(terminal);
+				Terminal terminal = obj.GetComponent<Terminal>();
+				if(terminal.ground) terminal.circuit = new Circuit(terminal);
+				AddTerminal(terminal);
 			}
 		}
 
@@ -35,21 +37,21 @@ namespace Game.Circuit
 			_terminals.Add(terminal);
 		}
 
-		// Linear. If needed can make this faster.
-		private Terminal GetNearestTerminalToPoint(Vector3 point, Terminal exclude = null)
+		/// <param name="Point">World space vector3. But works best if point.z = 0.</param>
+		/// <param name="allowOrphan">Whether to allow returning terminal which is not part of a circuit.</param>
+		/// <param name="exclude">Terminal to exclude, it also excludes any terminal which is part of same circuit and is of same node.</param>
+		private Terminal GetNearestTerminalToPoint(Vector3 point, bool allowOrphan, Terminal exclude = null)
 		{
 			if(_terminals.Count == 0) return null;
-			if(_terminals.Count == 1 && exclude != null) return null;
+			if(_terminals.Count == 1) return null;
+			Terminal res = null;
 
-			Terminal res = _terminals[0];
-			if(res == exclude)
-			{
-				res = _terminals[1];
-			}
 			foreach(Terminal term in _terminals)
 			{
-				if(term == exclude) continue;
-				if(Vector3.Distance(term.transform.position, point) < Vector3.Distance(res.transform.position, point))
+				// cannot select terminal not part of a circuit
+				if(!allowOrphan && term.circuit == null) continue;
+				if(exclude != null && (term.circuit == exclude.circuit && term.Node == exclude.Node)) continue;
+				if(res == null || Vector3.Distance(res.transform.position, point) > Vector3.Distance(term.transform.position, point))
 					res = term;
 			}
 			return res;
@@ -76,8 +78,8 @@ namespace Game.Circuit
 			{
 				var point = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
 				point.z = 0;
-				var t = GetNearestTerminalToPoint(point);
-				if(Vector3.Distance(point, t.transform.position) <= selectDistance)
+				var t = GetNearestTerminalToPoint(point, false);
+				if(t != null && Vector3.Distance(point, t.transform.position) <= selectDistance)
 				{
 					_selected = t;
 					t.Highlight(true);
@@ -91,37 +93,49 @@ namespace Game.Circuit
 				{
 					Wire wire = GameObject.Instantiate(wirePrefab);
 					wire.From = _selected;
-					// if(!_selected.stayGround) wire.From.ground = false;
 
-					if(_highlighted != null) 
+					if(_selected.fakeGround) _selected.Unground();
+					if(_highlighted != null)
 					{
 						wire.To = _highlighted;
-					//	if(!_highlighted.stayGround) _highlighted.ground = false;
+						if(_highlighted.fakeGround) _highlighted.Unground();
 					}
 					else
 					{
 						var position = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
 						position.z = 0;
-						Terminal terminal = GameObject.Instantiate(terminalPrefab);
-						terminal.transform.position = position;
-						terminal.ground = true;
+						
+						Terminal terminal = GameObject.Instantiate(terminalPrefab, position, terminalPrefab.transform.rotation);
+						terminal.fakeGround = true;
+					//	terminal.circuit = _selected.circuit; // Circuit already assigns this
+						
 						wire.To = terminal;
 						AddTerminal(terminal);	
 					}
+					if(_highlighted.isComponentTerminal && wire.To.circuit == null)
+					{
+						wire.From.circuit.AddEdge(wire);
+						wire.From.circuit.AddEdge(wire.To.Component);
+					} else if(wire.To.circuit != wire.From.circuit)
+					{
+						// merge
+					} else
+					{
+						wire.From.circuit.AddEdge(wire);
+					}
 					wire.Init();
-					_solver.Solve();
 				}
 				_selected?.Highlight(false);
 				_highlighted?.Highlight(false);
 				_selected = _highlighted = null;
 			}
 
-			if(Input.GetMouseButton(0))
+			if(Input.GetMouseButton(0) && _selected != null)
 			{
 				// highlight the nearest terminal
 				var point = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
 				point.z = 0;
-				var t = GetNearestTerminalToPoint(point, _selected);
+				var t = GetNearestTerminalToPoint(point, true, _selected);
 				
 				_highlighted?.Highlight(false);
 				_highlighted = null;

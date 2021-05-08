@@ -7,6 +7,7 @@ namespace Game.Circuit
 	{
 		public Terminal From { get; set; }
 		public Terminal To { get; set; }
+        public int Id { get; set; }
 	
 		private LineRenderer _line;
 		
@@ -17,9 +18,6 @@ namespace Game.Circuit
 
 		public void Init()
 		{
-			From.AddEdge(this);
-			To.AddEdge(this);
-
 			_line.positionCount = 2;
 			_line.SetPositions(new Vector3 [] { From.transform.position, To.transform.position });
 		}
