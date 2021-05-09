@@ -4,11 +4,22 @@ using System.Collections.Generic;
 using Game.DSA;
 using System.Linq;
 using MathNet.Numerics.LinearAlgebra;
+using System;
 
-/// TODO Create and solve Matrix Equations.
 /// TODO Merge two circuits.
 namespace Game.Circuit
 {
+	public static class CircuitMerger
+	{
+		// How to handle merging of two grounds?
+		// 1. When merging two circuits, replace one ground with a fakeground which basically connects everything to the other ground.
+		// 2. Players cant really join a ground to some other terminal. So no need to create a fake ground. This fixes it.
+		/// Merge Circuit B into Circuit A
+		public static Circuit Merge(Circuit A, Circuit B)
+		{
+			return A;
+		}
+	}
     /*
 	 * Each terminal has an id assigned by the circuit.
 	 * The id represents the terminal in UnionFind.
@@ -55,22 +66,6 @@ namespace Game.Circuit
 			return _unionFind.GetComponentSize(terminal.id) == 1 ? 0 : _unionFind.FindSetCompressed(terminal.id);
 		}
 
-		// Returns list of all nodes that terminal cannot connect to in this circuit.
-		public IEnumerable<Terminal> GetNotConnectableTerminals(Terminal terminal)
-		{
-			// return a list of terminals from this circuit with which terminal can connect
-			if(terminal.circuit != this)
-			{
-				// it can connect to any
-				return Enumerable.Empty<Terminal>();
-			} else 
-			{
-				// A terminal cannot connect to terminals sharing same node.
-				return _terminals.Where(term => term.Node == terminal.Node);
-			}
-		}
-
-		// TODO Handle ungrounding in merging separetly.
 		/// Assumes that this edge can be added. Does not check for errors.
 		public void AddEdge(IEdge edge)
 		{

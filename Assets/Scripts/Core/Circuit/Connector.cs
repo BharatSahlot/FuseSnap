@@ -30,7 +30,6 @@ namespace Game.Circuit
 				AddTerminal(terminal);
 			}
 
-
 			// Setup circuit using preexisiting wires
 			Wire[] wires = GameObject.FindObjectsOfType<Wire>();
 			// do a bfs
@@ -84,9 +83,11 @@ namespace Game.Circuit
 
 			foreach(Terminal term in _terminals)
 			{
+				if(term.ground) continue; // players cant connect to grounds
 				// cannot select terminal not part of a circuit
 				if(!allowOrphan && term.circuit == null) continue;
-				if(exclude != null && (term.circuit == exclude.circuit && term.Node == exclude.Node)) continue;
+				if(exclude != null && term.circuit == exclude.circuit && ((term.Node == exclude.Node) || 
+							(exclude.isComponentTerminal && term.Node == exclude.Component.From.Node))) continue;
 				if(res == null || Vector3.Distance(res.transform.position, point) > Vector3.Distance(term.transform.position, point))
 					res = term;
 			}
@@ -169,6 +170,7 @@ namespace Game.Circuit
 				// highlight the nearest terminal
 				var point = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
 				point.z = 0;
+
 				var t = GetNearestTerminalToPoint(point, true, _selected);
 				
 				_highlighted?.Highlight(false);
