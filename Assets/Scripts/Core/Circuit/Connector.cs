@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Game.Circuit 
 {
+	// Handle ground terminals properly in Circuit.
 	public class Connector : MonoBehaviour
 	{
 		public float selectDistance = 5.0f;
@@ -16,7 +16,6 @@ namespace Game.Circuit
 
 		private Camera _mainCamera = null;
 
-		// DOING Handle case of connecting to terminal of a Circuit component like Battery or Fuse.
 		private void Awake()
 		{
 			_mainCamera = Camera.main;
@@ -30,6 +29,43 @@ namespace Game.Circuit
 				if(terminal.ground) terminal.circuit = new Circuit(terminal);
 				AddTerminal(terminal);
 			}
+
+
+			// Setup circuit using preexisiting wires
+			Wire[] wires = GameObject.FindObjectsOfType<Wire>();
+			// do a bfs
+			Queue<Terminal> q = new Queue<Terminal>();
+			HashSet<Terminal> visited = new HashSet<Terminal>();
+			foreach(Wire wire in wires) 
+			{
+				if(wire.To.ground) q.Enqueue(wire.To);
+				if(wire.From.ground) q.Enqueue(wire.From);
+			}
+			while(q.Count > 0)
+			{
+				Terminal t = q.Dequeue();
+				if(visited.Contains(t)) continue;
+
+				if(t.isComponentTerminal && t.Component.Circuit == null)
+				{
+					t.circuit.AddEdge(t.Component);
+					q.Enqueue(t.Component.To == t ? t.Component.From : t);
+				}
+				visited.Add(t);
+				foreach(Wire wire in wires)
+				{
+					if(wire.To == t || wire.From == t)
+					{
+						Terminal to = wire.To == t ? wire.From : wire.To;
+						if(to.circuit == null)
+						{
+							t.circuit.AddEdge(wire);
+							q.Enqueue(to);
+						}
+					}
+				}
+			}
+			foreach(Terminal term in visited) term.circuit.Solve();
 		}
 
 		public void AddTerminal(Terminal terminal)
@@ -94,11 +130,10 @@ namespace Game.Circuit
 					Wire wire = GameObject.Instantiate(wirePrefab);
 					wire.From = _selected;
 
-					if(_selected.fakeGround) _selected.Unground();
+					Circuit circuit = _selected.circuit;
 					if(_highlighted != null)
 					{
 						wire.To = _highlighted;
-						if(_highlighted.fakeGround) _highlighted.Unground();
 					}
 					else
 					{
@@ -106,22 +141,21 @@ namespace Game.Circuit
 						position.z = 0;
 						
 						Terminal terminal = GameObject.Instantiate(terminalPrefab, position, terminalPrefab.transform.rotation);
-						terminal.fakeGround = true;
-					//	terminal.circuit = _selected.circuit; // Circuit already assigns this
 						
 						wire.To = terminal;
 						AddTerminal(terminal);	
 					}
-					if(_highlighted.isComponentTerminal && wire.To.circuit == null)
-					{
-						wire.From.circuit.AddEdge(wire);
-						wire.From.circuit.AddEdge(wire.To.Component);
-					} else if(wire.To.circuit != wire.From.circuit)
+					if(wire.To.circuit != null && wire.To.circuit != wire.From.circuit)
 					{
 						// merge
-					} else
+					} else 
 					{
-						wire.From.circuit.AddEdge(wire);
+						// only add component edge if the terminals are not already part of the same circuit.
+						if(wire.To.circuit == null && wire.To.isComponentTerminal) circuit.AddEdge(wire.To.Component);
+						
+						// add component edge before this
+						circuit.AddEdge(wire);
+						circuit.Solve();
 					}
 					wire.Init();
 				}

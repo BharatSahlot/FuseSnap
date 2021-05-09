@@ -3,26 +3,38 @@ using System.Collections.Generic;
 // using static Game.Helper;
 using Game.DSA;
 using System.Linq;
+using MathNet.Numerics.LinearAlgebra;
 
 /// TODO Create and solve Matrix Equations.
-/// TODO Matrix can be filled incrementally instead of rebuilding everytime. But many edge cases.
 /// TODO Merge two circuits.
 namespace Game.Circuit
 {
-	/*
+    /*
 	 * Each terminal has an id assigned by the circuit.
 	 * The id represents the terminal in UnionFind.
 	 * Terminal can ask for its node from its circuit.
-	 * New terminals need to unground before connecting to another terminal.
+	 * Terminals whose component size in UFDS is 1 are also considered grounds.
 	 */
-	public class Circuit
+    public class Circuit
 	{
 		public readonly Terminal ground;
 		private List<IEdge> _edgelist;
 		private HashSet<Terminal> _terminals;
 		private UnionFind _unionFind;
-		private int _nodes;
-        
+		private Vector<float> _x;
+		private bool _dirty = false;
+       
+		public IEnumerable<IEdge> EdgeList => _edgelist;
+		public IEnumerable<Terminal> Terminals => _terminals;
+		public int Nodes => _unionFind.ComponentsG1;
+		public int VSources { get; private set; }
+
+		public bool Solved => _x != null;
+		public float GetTerminalVoltage(Terminal terminal) => !IsGround(terminal) && Solved ? _x[terminal.Node - 1] : 0;
+		public float GetCurrent(Battery battery) => Solved ? _x[battery.id] : 0;
+
+		public static bool IsGround(Terminal terminal) => terminal.Node == 0;
+
 		public Circuit(Terminal ground)
         {
             this.ground = ground;
@@ -40,7 +52,7 @@ namespace Game.Circuit
 				Debug.LogError($"GetNode({terminal.GetInstanceID()}): Circuit does not contain terminal.");
 				return -1;
 			}
-			return _unionFind.FindSetCompressed(terminal.id);
+			return _unionFind.GetComponentSize(terminal.id) == 1 ? 0 : _unionFind.FindSetCompressed(terminal.id);
 		}
 
 		// Returns list of all nodes that terminal cannot connect to in this circuit.
@@ -58,14 +70,7 @@ namespace Game.Circuit
 			}
 		}
 
-		/// When a newly created terminal is connected to another terminal. We need to unground it first.
-		/// Doing a single reset works because the first edge connected to a new ground terminal ungrounds it.
-		public void Unground(Terminal terminal)
-		{
-			if(terminal.ground) _unionFind.Reset(terminal.id);
-			terminal.ground = false;
-		}
-
+		// TODO Handle ungrounding in merging separetly.
 		/// Assumes that this edge can be added. Does not check for errors.
 		public void AddEdge(IEdge edge)
 		{
@@ -77,14 +82,26 @@ namespace Game.Circuit
 			if(edge is Wire)
 			{
 				_unionFind.UnionSet(edge.To.id, edge.From.id);
-			}
-			_nodes = _unionFind.Components;
+			} else if(edge is Battery battery) battery.id = VSources++;
+			_edgelist.Add(edge);
+
+			edge.Circuit = this;
+			_dirty = true;
 		}
 
 		private bool AddTerminal(Terminal terminal)
 		{
 			terminal.circuit = this;
 			return _terminals.Add(terminal);
+		}
+
+        public void Solve()
+        {
+			if(_dirty)
+			{
+				_x = Solver.Solve(this);
+        		_dirty = false;
+			}
 		}
     }
 }

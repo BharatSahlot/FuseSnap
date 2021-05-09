@@ -11,6 +11,7 @@ namespace Game.Circuit
 		[field: SerializeField] public Terminal From { get; set; }
 		[field: SerializeField] public Terminal To { get; set; }
         public int Id { get; set; }
+		public Circuit Circuit { get; set; }
 
         private SpriteRenderer _sprite;
 		private Sprite _offSprite;
@@ -23,7 +24,7 @@ namespace Game.Circuit
 
 		private void Update()
 		{
-			float current = (From.voltage - To.voltage) / resistance;
+			float current = (From.Voltage - To.Voltage) / resistance;
 			if(Mathf.Abs(current) > 0.0f)
 			{
 				_sprite.sprite = _onnSprite;

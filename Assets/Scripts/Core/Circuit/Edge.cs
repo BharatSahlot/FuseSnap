@@ -5,5 +5,6 @@ namespace Game.Circuit
 		Terminal From { get; }
 		Terminal To { get; }
 		int Id { get; set; }
+		Circuit Circuit { get; set; }
 	}
 }
