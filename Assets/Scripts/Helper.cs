@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 namespace Game
@@ -8,5 +9,12 @@ namespace Game
 		{
 			return values.Max();
 		}
-	}
+
+        public static void Swap<T>(ref T i, ref T j)
+    	{
+			T temp = i;
+			i = j;
+			j = temp;
+        }
+    }
 }

@@ -96,7 +96,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ground: 0
-  voltage: 0
 --- !u!1 &7523986968380347589
 GameObject:
   m_ObjectHideFlags: 0
@@ -193,7 +192,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ground: 0
-  voltage: 0
 --- !u!1 &7523986969621575686
 GameObject:
   m_ObjectHideFlags: 0
@@ -268,7 +266,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 8852512794475590431, guid: ce48ad7baa0238d93aed3076c3cd8291, type: 3}
+  m_Sprite: {fileID: 5279693543091403329, guid: 48b4bba5bfabe08588c0cab2510cf3c3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -292,7 +290,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   voltage: 10
-  current: 0
-  _onnSprite: {fileID: -6425146941257551934, guid: ce48ad7baa0238d93aed3076c3cd8291, type: 3}
+  _onnSprite: {fileID: 5279693543091403329, guid: 48b4bba5bfabe08588c0cab2510cf3c3, type: 3}
   <From>k__BackingField: {fileID: 7523986968380347591}
   <To>k__BackingField: {fileID: 7523986967628163759}
