@@ -6,16 +6,14 @@ namespace Game.Circuit
     public class Terminal : MonoBehaviour
 	{
 		public bool ground = false;
-		public bool isComponentTerminal = false;
 
 		private IEdge _component = null;
 		public IEdge Component => _component ??= GetComponentInParent<IEdge>();
 		internal int id = 0;
 
-		public Circuit circuit;
-		public int Node => circuit == null ? -1 : circuit.GetNode(this);
+		public int Node { get; internal set; }
 
-		public float Voltage => circuit != null && circuit.Solved ? circuit.GetTerminalVoltage(this) : 0f;
+		public float Voltage { get; internal set; }
 
 		private SpriteRenderer _sprite;
         private void Awake()

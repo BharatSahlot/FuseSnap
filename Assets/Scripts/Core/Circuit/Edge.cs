@@ -2,9 +2,8 @@ namespace Game.Circuit
 {
 	public interface IEdge
 	{
-		Terminal From { get; }
-		Terminal To { get; }
+		Terminal From { get; set; }
+		Terminal To { get; set; }
 		int Id { get; set; }
-		Circuit Circuit { get; set; }
 	}
 }

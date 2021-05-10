@@ -11,7 +11,6 @@ namespace Game.Circuit
 		[field: SerializeField] public Terminal From { get; set; }
 		[field: SerializeField] public Terminal To { get; set; }
         public int Id { get; set; }
-		public Circuit Circuit { get; set; }
 
         private SpriteRenderer _sprite;
 		private Sprite _offSprite;

@@ -15,6 +15,7 @@ namespace Game.Circuit
 		private Terminal _selected = null, _highlighted = null;
 
 		private Camera _mainCamera = null;
+		private Circuit _circuit = new Circuit();
 
 		private void Awake()
 		{
@@ -26,7 +27,6 @@ namespace Game.Circuit
 			foreach(var obj in objs) 
 			{
 				Terminal terminal = obj.GetComponent<Terminal>();
-				if(terminal.ground) terminal.circuit = new Circuit(terminal);
 				AddTerminal(terminal);
 			}
 
@@ -45,9 +45,9 @@ namespace Game.Circuit
 				Terminal t = q.Dequeue();
 				if(visited.Contains(t)) continue;
 
-				if(t.isComponentTerminal && t.Component.Circuit == null)
+				if(t.Component != null)
 				{
-					t.circuit.AddEdge(t.Component);
+					_circuit.AddEdge(t.Component);
 					q.Enqueue(t.Component.To == t ? t.Component.From : t);
 				}
 				visited.Add(t);
@@ -56,15 +56,15 @@ namespace Game.Circuit
 					if(wire.To == t || wire.From == t)
 					{
 						Terminal to = wire.To == t ? wire.From : wire.To;
-						if(to.circuit == null)
+						if(!visited.Contains(to))
 						{
-							t.circuit.AddEdge(wire);
+							_circuit.AddEdge(wire);
 							q.Enqueue(to);
 						}
 					}
 				}
 			}
-			foreach(Terminal term in visited) term.circuit.Solve();
+			_circuit.Update();
 		}
 
 		public void AddTerminal(Terminal terminal)
@@ -85,9 +85,9 @@ namespace Game.Circuit
 			{
 				if(term.ground) continue; // players cant connect to grounds
 				// cannot select terminal not part of a circuit
-				if(!allowOrphan && term.circuit == null) continue;
-				if(exclude != null && term.circuit == exclude.circuit && ((term.Node == exclude.Node) || 
-							(exclude.isComponentTerminal && term.Node == exclude.Component.From.Node))) continue;
+				if(!allowOrphan && !_circuit.HasTerminal(term)) continue;
+				if(exclude != null && ((term.Node == exclude.Node) || 
+							(exclude.Component != null && term.Node == exclude.Component.From.Node))) continue;
 				if(res == null || Vector3.Distance(res.transform.position, point) > Vector3.Distance(term.transform.position, point))
 					res = term;
 			}
@@ -131,7 +131,6 @@ namespace Game.Circuit
 					Wire wire = GameObject.Instantiate(wirePrefab);
 					wire.From = _selected;
 
-					Circuit circuit = _selected.circuit;
 					if(_highlighted != null)
 					{
 						wire.To = _highlighted;
@@ -146,18 +145,10 @@ namespace Game.Circuit
 						wire.To = terminal;
 						AddTerminal(terminal);	
 					}
-					if(wire.To.circuit != null && wire.To.circuit != wire.From.circuit)
-					{
-						// merge
-					} else 
-					{
-						// only add component edge if the terminals are not already part of the same circuit.
-						if(wire.To.circuit == null && wire.To.isComponentTerminal) circuit.AddEdge(wire.To.Component);
-						
-						// add component edge before this
-						circuit.AddEdge(wire);
-						circuit.Solve();
-					}
+					// only add component edge if the terminals are not already part of the same circuit.
+					if(wire.To.Component != null) _circuit.AddEdge(wire.To.Component);
+					_circuit.AddEdge(wire);
+					_circuit.Update();
 					wire.Init();
 				}
 				_selected?.Highlight(false);
