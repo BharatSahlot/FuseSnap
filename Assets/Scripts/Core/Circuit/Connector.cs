@@ -75,7 +75,7 @@ namespace Game.Circuit
 		/// <param name="Point">World space vector3. But works best if point.z = 0.</param>
 		/// <param name="allowOrphan">Whether to allow returning terminal which is not part of a circuit.</param>
 		/// <param name="exclude">Terminal to exclude, it also excludes any terminal which is part of same circuit and is of same node.</param>
-		private Terminal GetNearestTerminalToPoint(Vector3 point, bool allowOrphan, Terminal exclude = null)
+		private Terminal GetNearestTerminalToPoint(Vector3 point, bool allowOrphan, int excludeNode = -1)
 		{
 			if(_terminals.Count == 0) return null;
 			if(_terminals.Count == 1) return null;
@@ -86,8 +86,9 @@ namespace Game.Circuit
 				if(term.ground) continue; // players cant connect to grounds
 				// cannot select terminal not part of a circuit
 				if(!allowOrphan && !_circuit.HasTerminal(term)) continue;
-				if(exclude != null && ((term.Node == exclude.Node) || 
-							(exclude.Component != null && term.Node == exclude.Component.From.Node))) continue;
+				// if(exclude != null && ((term.Node == exclude.Node) || 
+				// 			(exclude.Component != null && term.Node == exclude.Component.From.Node))) continue;
+				if(_circuit.HasTerminal(term) && term.Node == excludeNode) continue;
 				if(res == null || Vector3.Distance(res.transform.position, point) > Vector3.Distance(term.transform.position, point))
 					res = term;
 			}
@@ -162,7 +163,9 @@ namespace Game.Circuit
 				var point = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
 				point.z = 0;
 
-				var t = GetNearestTerminalToPoint(point, true, _selected);
+				int exclude = -1;
+				if(_selected.Component != null) exclude = _selected == _selected.Component.From ? _selected.Component.To.Node : _selected.Component.From.Node;
+				var t = GetNearestTerminalToPoint(point, true, exclude);
 				
 				_highlighted?.Highlight(false);
 				_highlighted = null;
