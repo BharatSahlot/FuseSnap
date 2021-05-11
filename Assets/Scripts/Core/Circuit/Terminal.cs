@@ -7,8 +7,8 @@ namespace Game.Circuit
 	{
 		public bool ground = false;
 
-		private IEdge _component = null;
-		public IEdge Component => _component ??= GetComponentInParent<IEdge>();
+		private MonoEdge _component = null;
+		public MonoEdge Component => _component ??= GetComponentInParent<MonoEdge>();
 		internal int id = 0;
 
 		public int Node { get; internal set; }

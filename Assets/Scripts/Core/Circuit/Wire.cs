@@ -3,19 +3,21 @@ using UnityEngine;
 namespace Game.Circuit
 {
 	// TODO Find how much current is passing through a wire, by searching for connected battery or fuse.
-	public class Wire : MonoBehaviour, IEdge
+	public class Wire : MonoEdge
 	{
-		[field: SerializeField] public Terminal From { get; set; }
-		[field: SerializeField] public Terminal To { get; set; }
-        public int Id { get; set; }
-	
 		private LineRenderer _line;
-		
-		public void Init()
+
+		protected override void Awake() 
 		{
-			if(_line == null) _line = GetComponent<LineRenderer>();
+			_line = GetComponent<LineRenderer>();
+		}
+		
+		protected override void Start()
+		{
 			_line.positionCount = 2;
-			_line.SetPositions(new Vector3 [] { From.transform.position, To.transform.position });
+			_line.SetPosition(0, To.transform.position);
+			_line.SetPosition(1, From.transform.position);
+			Graphics.CircuitGrid.Instance.DrawWire(From.transform.position, To.transform.position);
 		}
 
 		private void Update()

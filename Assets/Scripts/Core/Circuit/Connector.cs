@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Game.Graphics;
 
 namespace Game.Circuit 
 {
@@ -150,7 +151,6 @@ namespace Game.Circuit
 					if(wire.To.Component != null) _circuit.AddEdge(wire.To.Component);
 					_circuit.AddEdge(wire);
 					_circuit.Update();
-					wire.Init();
 				}
 				_selected?.Highlight(false);
 				_highlighted?.Highlight(false);

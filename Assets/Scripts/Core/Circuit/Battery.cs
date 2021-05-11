@@ -2,23 +2,18 @@ using UnityEngine;
 
 namespace Game.Circuit 
 {
-	public class Battery : MonoBehaviour, IEdge
+	public class Battery : MonoEdge 
 	{
 		public float voltage = 1.0f;
 
 		[SerializeField] private Sprite _onnSprite;
-
-		[field: SerializeField] public Terminal From { get; set; }
-		[field: SerializeField] public Terminal To { get; set; }
-        public int Id { get; set; } = -1;
         public float Current { get; internal set; }
 
-        private SpriteRenderer _sprite;
 		private Sprite _offSprite;
 
-		private void Awake()
+		protected override void Awake()
 		{
-			_sprite = GetComponent<SpriteRenderer>();
+			base.Awake();
 			_offSprite = _sprite.sprite;
 		}
 

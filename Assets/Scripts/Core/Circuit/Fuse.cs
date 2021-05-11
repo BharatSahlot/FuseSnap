@@ -2,22 +2,17 @@ using UnityEngine;
 
 namespace Game.Circuit 
 {
-	public class Fuse : MonoBehaviour, IEdge
+	public class Fuse : MonoEdge
 	{
 		public float resistance = 1.0f;
 		public float max_current = 1.0f;
 		[SerializeField] private Sprite _onnSprite;
 
-		[field: SerializeField] public Terminal From { get; set; }
-		[field: SerializeField] public Terminal To { get; set; }
-        public int Id { get; set; }
-
-        private SpriteRenderer _sprite;
 		private Sprite _offSprite;
 
-		private void Awake()
+		protected override void Awake()
 		{
-			_sprite = GetComponent<SpriteRenderer>();
+			base.Awake();
 			_offSprite = _sprite.sprite;
 		}
 

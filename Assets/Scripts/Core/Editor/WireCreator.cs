@@ -31,7 +31,6 @@ namespace Game.Editor
 					Wire wire = (Wire)PrefabUtility.InstantiatePrefab(_wirePrefab);
 					wire.From = selection[0];
 					wire.To = selection[1];
-					wire.Init();
 
 					Undo.RegisterCreatedObjectUndo(wire.gameObject, "Connect terminals.");
 				}
