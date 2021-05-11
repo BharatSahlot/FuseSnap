@@ -19,6 +19,6 @@ Each round will start with selecting a random circuit map. Each turn players wil
 Circuits are solved using [MNA](#notes). Wires are not an electrical component. They are not 0-volt batteries or 0-ohm resistors. They are just ideal wires, they don't contribute to the actual solving of the circuit.
 
 ## Notes
-[1]: A newly created terminal is considered to be a fake ground.
-[2]: This sounds cool but will need to do some testing. Also, this demands skill-based matchmaking.
-[3]: https://lpsa.swarthmore.edu/Systems/Electrical/mna/MNA1.html https://github.com/circuitsim/circuit-simulator https://www.falstad.com/circuit/
+1. A newly created terminal is considered to be a fake ground.
+2. This sounds cool but will need to do some testing. Also, this demands skill-based matchmaking.
+3. https://lpsa.swarthmore.edu/Systems/Electrical/mna/MNA1.html https://github.com/circuitsim/circuit-simulator https://www.falstad.com/circuit/
