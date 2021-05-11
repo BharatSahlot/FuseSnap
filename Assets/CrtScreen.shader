@@ -80,11 +80,6 @@ Shader "Hidden/CrtScreen"
                 return float2(x,y);
 			}
 
-			float3 blur (sampler2D tex, float2 uv)
-			{
-
-			}
-
             fixed4 frag (v2f i) : SV_Target
             {
 				// x glitch
