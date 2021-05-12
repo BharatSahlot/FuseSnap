@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Game.Graphics 
@@ -68,13 +69,25 @@ namespace Game.Graphics
 		{
 			var start = GetSquareAtWorldPosition(a);
 			var end = GetSquareAtWorldPosition(b);
-			var path = DSA.GridShortestPath.GetShortestPath(_grid, start, end);
+			List<(int r, int c)> path = DSA.GridShortestPath.GetShortestPath(_grid, start, end);
 			foreach((int r, int c) in path)
 			{
 				FillSquare(r, c);
 			}
-			line.positionCount = path.Count;
-			line.SetPositions(path.Select((p, i) => GetSquareWorldPosition(p.Item1, p.Item2)).ToArray());
+
+			// try using 2d version
+			// List<Vector3> positions = path.Select((p, i) => (GetSquareWorldPosition(p.Item1, p.Item2))).ToList();
+			List<Vector3> positions = new List<Vector3>();
+			Vector2 dir = Vector2.zero;
+			for(int i = 0; i < path.Count - 1; ++i)
+			{
+				Vector2 nd = new Vector2(path[i].r - path[i + 1].r, path[i].c - path[i + 1].c);
+				if(nd != dir) positions.Add(GetSquareWorldPosition(path[i].r, path[i].c));
+				dir = nd;
+			}
+			positions.Add(GetSquareWorldPosition(path[path.Count - 1].Item1, path[path.Count - 1].Item2));
+			line.positionCount = positions.Count;
+			line.SetPositions(positions.ToArray());
 		}
 
 		// this is working

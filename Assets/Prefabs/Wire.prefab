@@ -44,6 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24b6aa80760d6758da8c35b19e0f2aeb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <From>k__BackingField: {fileID: 0}
+  <To>k__BackingField: {fileID: 0}
 --- !u!120 &8814302456316345541
 LineRenderer:
   m_ObjectHideFlags: 0
@@ -92,8 +94,8 @@ LineRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.05027771
-        value: 0.106918335
+        time: 0.04198778
+        value: 0.1317639
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -132,7 +134,7 @@ LineRenderer:
       m_Mode: 1
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
-    numCornerVertices: 0
+    numCornerVertices: 3
     numCapVertices: 0
     alignment: 0
     textureMode: 0
