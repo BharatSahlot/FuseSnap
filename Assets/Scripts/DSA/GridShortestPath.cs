@@ -7,14 +7,14 @@ namespace Game.DSA
 	{
 		private class Node : IComparable
 		{
-			public int r, c, d, pr, pc;
+			public int r, c, d, pr, pc, dir;
 
             public int CompareTo(object obj)
             {
 				Node x = obj as Node;
 				if(d < x.d) return -1;
 				else if(d > x.d) return 1;
-				return (r, c, pr, pc).CompareTo((x.r, x.c, x.pr, x.pc)); // tuple comparison
+				return (r, c, pr, pc, dir).CompareTo((x.r, x.c, x.pr, x.pc, dir)); // tuple comparison
             }
         }
 
@@ -50,8 +50,8 @@ namespace Game.DSA
 					if(nr < 0 || nr >= grid.GetLength(0) || nc < 0 || nc >= grid.GetLength(1)) continue;
 					if(parent.ContainsKey((nr, nc))) continue; // already found shortest path
 
-					int dist = d + grid[nr, nc] + 1;
-					q.Add(new Node { r = nr, c = nc, d = dist, pr = r, pc = c });
+					int dist = d + grid[nr, nc] + (i == node.dir ? 1 : 2);
+					q.Add(new Node { r = nr, c = nc, d = dist, pr = r, pc = c, dir = i});
 				}
 			}
 			if(!parent.ContainsKey(end)) return null;
