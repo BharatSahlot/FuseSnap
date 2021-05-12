@@ -14,10 +14,10 @@ namespace Game.Circuit
 		
 		protected override void Start()
 		{
-			_line.positionCount = 2;
-			_line.SetPosition(0, To.transform.position);
-			_line.SetPosition(1, From.transform.position);
-			Graphics.CircuitGrid.Instance.DrawWire(From.transform.position, To.transform.position);
+			// _line.positionCount = 2;
+			// _line.SetPosition(0, To.transform.position);
+			// _line.SetPosition(1, From.transform.position);
+			Graphics.CircuitGrid.Instance.DrawWire(From.transform.position, To.transform.position, _line);
 		}
 
 		private void Update()

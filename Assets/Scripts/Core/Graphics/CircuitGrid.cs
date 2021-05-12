@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Linq;
 
 namespace Game.Graphics 
 {
@@ -9,6 +10,7 @@ namespace Game.Graphics
 
 		[SerializeField] private float _squareToScreenWidthRatio = 0.01f;
 		[SerializeField] private int _filledSquareCost = 2; // cost of putting wire on top of a filled square
+		[SerializeField] private int _filledNeighbourCost = 1; // cost of putting wire on top of a square which has a filled neightbour
 		[SerializeField] private LayerMask _circuitLayerMask;
 		
 		public float SquareSize { get; private set; }
@@ -39,6 +41,15 @@ namespace Game.Graphics
 			_grid = new int[R, C];
 		}
 
+		private void FillSquare(int r, int c)
+		{
+			_grid[r, c] += _filledSquareCost;
+			if(r + 1 < R) _grid[r + 1, c] += _filledNeighbourCost;
+			if(r - 1 >= 0) _grid[r - 1, c] += _filledNeighbourCost;
+			if(c + 1 < C) _grid[r, c + 1] += _filledNeighbourCost;
+			if(c - 1 >= 0) _grid[r, c - 1] += _filledNeighbourCost;
+		}
+
 		public void AddComponent(Bounds component)
 		{
 			Vector3 center = component.center;
@@ -48,18 +59,22 @@ namespace Game.Graphics
 				for(float y = center.y - extents.y; y <= center.y + extents.y; y += SquareSize)
 				{
 					var (r, c) = GetSquareAtWorldPosition(new Vector3(x, y, 0));
-					_grid[r, c] += _filledSquareCost;
+					FillSquare(r, c);
 				}
 			}
 		}
 
-		public void DrawWire(Vector3 a, Vector3 b)
+		public void DrawWire(Vector3 a, Vector3 b, LineRenderer line)
 		{
 			var start = GetSquareAtWorldPosition(a);
 			var end = GetSquareAtWorldPosition(b);
-			// Find shortest path between a and b
 			var path = DSA.GridShortestPath.GetShortestPath(_grid, start, end);
-			foreach((int r, int c) in path) _grid[r, c] += _filledSquareCost;
+			foreach((int r, int c) in path)
+			{
+				FillSquare(r, c);
+			}
+			line.positionCount = path.Count;
+			line.SetPositions(path.Select((p, i) => GetSquareWorldPosition(p.Item1, p.Item2)).ToArray());
 		}
 
 		// this is working
@@ -90,7 +105,7 @@ namespace Game.Graphics
 				for(int c = 0; c < C; ++c)
 				{
 					Vector3 center = GetSquareWorldPosition(r, c);
-					if(_grid[r, c] != 0) Gizmos.color = Color.red;
+					if(_grid[r, c] > 1) Gizmos.color = Color.red;
 					else Gizmos.color = Color.white;
 					Gizmos.DrawWireCube(center, Vector3.one * SquareSize);
 				}

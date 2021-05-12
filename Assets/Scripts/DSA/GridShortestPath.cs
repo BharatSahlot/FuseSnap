@@ -13,8 +13,8 @@ namespace Game.DSA
             {
 				Node x = obj as Node;
 				if(d < x.d) return -1;
-				else if(d == x.d) return 1;
-				return 0;
+				else if(d > x.d) return 1;
+				return (r, c, pr, pc).CompareTo((x.r, x.c, x.pr, x.pc)); // tuple comparison
             }
         }
 
@@ -29,17 +29,15 @@ namespace Game.DSA
 			var q = new SortedSet<Node>();
 			q.Add(new Node { r = start.r, c = start.c, d = 0, pr = start.r, pc = start.c });
 			
-			var visited = new HashSet<(int r, int c)>();
 			var parent = new Dictionary<(int r, int c), (int r, int c)>();
 			while(q.Count > 0)
 			{
 				Node node = q.Min;
-				q.Remove(q.Min);
+				q.Remove(node);
 
 				int r = node.r, c = node.c, d = node.d;
-				if(visited.Contains((r, c))) continue;
+				if(parent.ContainsKey((r, c))) continue;;
 				
-				visited.Add((r, c));
 				parent[(r, c)] = (node.pr, node.pc);
 				if(r == end.r && c == end.c) break;
 
@@ -50,8 +48,10 @@ namespace Game.DSA
 
 					// if out of range then continue
 					if(nr < 0 || nr >= grid.GetLength(0) || nc < 0 || nc >= grid.GetLength(1)) continue;
-					if(visited.Contains((nr, nc))) continue; // already found shortest path
-					q.Add(new Node { r = nr, c = nc, d = d + grid[nr, nc], pr = r, pc = c });
+					if(parent.ContainsKey((nr, nc))) continue; // already found shortest path
+
+					int dist = d + grid[nr, nc] + 1;
+					q.Add(new Node { r = nr, c = nc, d = dist, pr = r, pc = c });
 				}
 			}
 			if(!parent.ContainsKey(end)) return null;
