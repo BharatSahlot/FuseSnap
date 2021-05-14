@@ -1,13 +1,17 @@
-Shader "Unlit/Fuse"
+Shader "Unlit/Line"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
+        _NoCurrentTexture ("No Current Texture", 2D) = "white" {}
+        _CurrentTexture ("Current Texture", 2D) = "white" {}
 		_Current ("Current", float) = 0
+        _IsCurrentFlowing ("Is current flowing", int) = 0
 	}
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "Queue"="Transparent" "RenderType"="Transparent" }
+        ZWrite Off
+        Blend SrcAlpha OneMinusSrcAlpha
         LOD 100
 
         Pass
@@ -35,15 +39,21 @@ Shader "Unlit/Fuse"
 				fixed4 color : COLOR;
             };
 
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
+            sampler2D _NoCurrentTexture;
+            float4 _NoCurrentTexture_ST;
+
+            sampler2D _CurrentTexture;
+            float4 _CurrentTexture_ST;
+
 			float _Current;
+            int _IsCurrentFlowing;
 
             v2f vert (appdata v)
             {
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+                o.uv = v.uv;
+                // o.uv = TRANSFORM_TEX(v.uv, _NoCurrentTexture);
                 o.color = v.color;
 				UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
@@ -53,8 +63,10 @@ Shader "Unlit/Fuse"
             {
                 // sample the texture
                 float2 uv = i.uv + float2(_Current, 0);
-				fixed4 col = tex2D(_MainTex, i.uv);
-                return col;
+				fixed4 col = tex2D(_NoCurrentTexture, TRANSFORM_TEX(i.uv, _NoCurrentTexture));
+				fixed4 col2 = tex2D(_CurrentTexture, TRANSFORM_TEX(i.uv, _CurrentTexture));
+                return lerp(col, col2, _IsCurrentFlowing);
+                // return col * (1 - _IsCurrentFlowing) + col2 * _IsCurrentFlowing;
             }
             ENDCG
         }

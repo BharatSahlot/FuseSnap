@@ -8,6 +8,8 @@ namespace Game.Circuit
 
 		[SerializeField] private Sprite _onnSprite;
         public float Current { get; internal set; }
+		public Terminal PositiveTerminal => From;
+		public Terminal NegativeTerminal => To;
 
 		private Sprite _offSprite;
 

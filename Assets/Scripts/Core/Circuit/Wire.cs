@@ -6,10 +6,12 @@ namespace Game.Circuit
 	public class Wire : MonoEdge
 	{
 		private LineRenderer _line;
+		private Material _mat;
 
 		protected override void Awake() 
 		{
 			_line = GetComponent<LineRenderer>();
+			_mat = _line.material;
 		}
 		
 		protected override void Start()
@@ -22,6 +24,9 @@ namespace Game.Circuit
 
 		private void Update()
 		{
+			_mat.SetFloat("_Current", From.Current);
+			if(From.Current != 0) _mat.SetInt("_IsCurrentFlowing", 1);
+			else _mat.SetInt("_IsCurrentFlowing", 0);
 		}
 	}
 }

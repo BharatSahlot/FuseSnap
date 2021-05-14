@@ -14,6 +14,7 @@ namespace Game.Circuit
 		public int Node { get; internal set; }
 
 		public float Voltage { get; internal set; }
+		public float Current { get; internal set; } // Positive current means current is going away from this terminal
 
 		private SpriteRenderer _sprite;
         private void Awake()

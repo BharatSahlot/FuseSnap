@@ -15,6 +15,7 @@ namespace Game.Circuit
 		public void AddEdge(IEdge edge)
 		{
 			// dont add if edge already present
+			// ERROR fix hash code function so that edges where only from and to are interchanged are considered same
 			if(!_edgeList.Add(edge)) return;
 
 			AddTerminal(edge.To);
@@ -34,16 +35,41 @@ namespace Game.Circuit
 			return _terminals.Contains(term);
         }
 
-		private int AssignNodes()
+		private (int nodes, int wires) AssignNodes()
 		{
 			var uf = new Game.DSA.UnionFind(_terminals.Count);
+			List<Wire>[] wires = new List<Wire>[_terminals.Count];
+
 			int[] edgeCount = new int[_terminals.Count];
 			foreach(IEdge edge in _edgeList)
 			{
 				edgeCount[edge.To.id]++;
 				edgeCount[edge.From.id]++;
-				if(edge is Wire) uf.UnionSet(edge.To.id, edge.From.id);
+				// if(edge is Wire) uf.UnionSet(edge.To.id, edge.From.id);
+				if(edge is Wire)
+				{
+					if(wires[edge.To.id] == null) wires[edge.To.id] = new List<Wire>();
+					if(wires[edge.From.id] == null) wires[edge.From.id] = new List<Wire>();
+
+					wires[edge.To.id].Add(edge as Wire);
+					wires[edge.From.id].Add(edge as Wire);
+				}
 			}
+	
+			int wc = 0;
+			foreach(Wire wire in _edgeList.Where(edge => edge is Wire)) wire.Id = wc++;
+			var wireUf = new Game.DSA.UnionFind(wc);
+			foreach(List<Wire> list in wires)
+			{
+				if(list == null) continue;
+				if(list.Count == 2)
+				{
+					wireUf.UnionSet(list[0].Id, list[1].Id);
+					// union set any one of the uncommon terminal to the common terminal
+					uf.UnionSet(list[0].To.id, list[0].From.id);
+				}
+			}
+			foreach(Wire wire in _edgeList.Where(edge => edge is Wire)) wire.Id = wireUf.FindSetCompressed(wire.Id);
 
 			// Terminals connected to only one edge are considered grounds.
 			foreach(Terminal terminal in _terminals)
@@ -53,16 +79,14 @@ namespace Game.Circuit
 			}
 
 			foreach(Terminal terminal in _terminals) terminal.Node = uf.FindSetCompressed(terminal.id);
-			return uf.Components - 1;
+			return (uf.Components - 1, wireUf.Components);
 		}
 
 		public void Update()
 		{
-			int nodes = AssignNodes();
-			Vector<float> x = Solver.Solve(nodes, _vSources, _edgeList);
+			(int nodes, int wires) = AssignNodes();
+			Vector<float> x = Solver.Solve(nodes, wires, _vSources, _edgeList);
 			foreach(Terminal terminal in _terminals) terminal.Voltage = terminal.Node == 0 ? 0 : x[terminal.Node - 1];
-			foreach(Battery battery in _edgeList.Where(edge => edge is Battery)) battery.Current = x[nodes + battery.Id];
 		}
-
     }
 }

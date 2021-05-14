@@ -633,7 +633,6 @@ MonoBehaviour:
   _circuitLayerMask:
     serializedVersion: 2
     m_Bits: 64
-  _lineTolerance: 0.01
 --- !u!4 &851219795
 Transform:
   m_ObjectHideFlags: 0

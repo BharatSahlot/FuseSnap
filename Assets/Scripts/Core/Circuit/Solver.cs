@@ -6,12 +6,12 @@ namespace Game.Circuit
 {
     public static class Solver
 	{
-		public static Vector<float> Solve(int nodes, int vSources, IEnumerable<IEdge> edgeList)
+		public static Vector<float> Solve(int nodes, int wires, int vSources, IEnumerable<IEdge> edgeList)
 		{
 			if(nodes < 1) return null;
 
-			Matrix<float> A = Matrix<float>.Build.Sparse(nodes + vSources, nodes + vSources);
-			Vector<float> Z = Vector<float>.Build.Sparse(nodes + vSources);
+			Matrix<float> A = Matrix<float>.Build.Sparse(nodes + wires + vSources, nodes + wires + vSources);
+			Vector<float> Z = Vector<float>.Build.Sparse(nodes + wires + vSources);
 			void StampConductance(int r, int c, float val) => A[r - 1, c - 1] += val;
 			void StampVoltage(int r, int c, int val) => A[r - 1, nodes + c] = A[nodes + c, r - 1] = val;
 			void StampVCurrent(int id, float voltage) => Z[nodes + id] = voltage;
@@ -34,6 +34,14 @@ namespace Game.Circuit
 						StampConductance(u.Node, v.Node, -1.0f / fuse.resistance);
 						StampConductance(v.Node, u.Node, -1.0f / fuse.resistance);
 					}
+				} else if(edge is Wire)
+				{
+					if(edge.To.Node == edge.From.Node) continue;
+
+					// stamp as 0 voltage battery
+					if(u.Node != 0) StampVoltage(u.Node, vSources + edge.Id, 1);
+					if(v.Node != 0) StampVoltage(v.Node, vSources + edge.Id, -1);
+					StampVCurrent(vSources + edge.Id, 0);
 				}
 			}
 			return A.Solve(Z);
