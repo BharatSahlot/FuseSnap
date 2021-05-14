@@ -87,6 +87,12 @@ namespace Game.Circuit
 			(int nodes, int wires) = AssignNodes();
 			Vector<float> x = Solver.Solve(nodes, wires, _vSources, _edgeList);
 			foreach(Terminal terminal in _terminals) terminal.Voltage = terminal.Node == 0 ? 0 : x[terminal.Node - 1];
+			foreach(IEdge edge in _edgeList)
+			{
+				if(edge is Battery) edge.Current = x[nodes + edge.Id];
+				else if(edge is Fuse fuse) edge.Current = (edge.To.Voltage - edge.From.Voltage) / fuse.resistance;
+				else if(edge is Wire) edge.Current = x[nodes + _vSources + edge.Id];
+			}
 		}
     }
 }

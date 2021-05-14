@@ -8,8 +8,9 @@ namespace Game.Circuit
         [field: SerializeField] public Terminal From { get; set; }
         [field: SerializeField] public Terminal To { get; set; }
         public int Id { get; set; }
+		public float Current { get; set; }
 
-		protected SpriteRenderer _sprite;
+        protected SpriteRenderer _sprite;
 
 		protected virtual void Awake()
 		{

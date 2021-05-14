@@ -7,11 +7,14 @@ namespace Game.Circuit
 	{
 		private LineRenderer _line;
 		private Material _mat;
+		private float _flow;
+		private Vector2 _defaultScale;
 
 		protected override void Awake() 
 		{
 			_line = GetComponent<LineRenderer>();
 			_mat = _line.material;
+			_defaultScale = _mat.GetTextureScale("_CurrentTexture");
 		}
 		
 		protected override void Start()
@@ -24,8 +27,10 @@ namespace Game.Circuit
 
 		private void Update()
 		{
-			_mat.SetFloat("_Current", From.Current);
-			if(From.Current != 0) _mat.SetInt("_IsCurrentFlowing", 1);
+			_flow += Current * Time.deltaTime;
+			_mat.SetFloat("_Current", -_flow);
+			_mat.SetTextureScale("_CurrentTexture", new Vector2(Mathf.Sign(-_flow) * _defaultScale.x, _defaultScale.y));
+			if(Current != 0) _mat.SetInt("_IsCurrentFlowing", 1);
 			else _mat.SetInt("_IsCurrentFlowing", 0);
 		}
 	}

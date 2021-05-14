@@ -63,8 +63,8 @@ Shader "Unlit/Line"
             {
                 // sample the texture
                 float2 uv = i.uv + float2(_Current, 0);
-				fixed4 col = tex2D(_NoCurrentTexture, TRANSFORM_TEX(i.uv, _NoCurrentTexture));
-				fixed4 col2 = tex2D(_CurrentTexture, TRANSFORM_TEX(i.uv, _CurrentTexture));
+				fixed4 col = tex2D(_NoCurrentTexture, TRANSFORM_TEX(uv, _NoCurrentTexture));
+				fixed4 col2 = tex2D(_CurrentTexture, TRANSFORM_TEX(uv, _CurrentTexture));
                 return lerp(col, col2, _IsCurrentFlowing);
                 // return col * (1 - _IsCurrentFlowing) + col2 * _IsCurrentFlowing;
             }
