@@ -35,6 +35,7 @@ namespace Game.Circuit
 			return _terminals.Contains(term);
         }
 
+		// FIXME Voltage source loop when connecting two wires connected to ground to a battery
 		private (int nodes, int wires) AssignNodes()
 		{
 			var uf = new Game.DSA.UnionFind(_terminals.Count);
@@ -51,8 +52,9 @@ namespace Game.Circuit
 					if(wires[edge.To.id] == null) wires[edge.To.id] = new List<Wire>();
 					if(wires[edge.From.id] == null) wires[edge.From.id] = new List<Wire>();
 
-					wires[edge.To.id].Add(edge as Wire);
-					wires[edge.From.id].Add(edge as Wire);
+					// FIXED Two wires getting out of a single component terminals are considered 1
+					if(edge.To.Component == null) wires[edge.To.id].Add(edge as Wire);
+					if(edge.From.Component == null) wires[edge.From.id].Add(edge as Wire);
 				}
 			}
 	

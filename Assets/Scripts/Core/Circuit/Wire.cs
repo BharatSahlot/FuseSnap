@@ -5,6 +5,8 @@ namespace Game.Circuit
 	// TODO Find how much current is passing through a wire, by searching for connected battery or fuse.
 	public class Wire : MonoEdge
 	{
+		[SerializeField] private float _currentSpeed = 0.3f;
+
 		private LineRenderer _line;
 		private Material _mat;
 		private float _flow;
@@ -27,8 +29,8 @@ namespace Game.Circuit
 
 		private void Update()
 		{
-			_flow += Current * Time.deltaTime;
-			_mat.SetFloat("_Current", -_flow);
+			_flow += Current * Time.deltaTime * _currentSpeed;
+			_mat.SetFloat("_Current", _flow);
 			_mat.SetTextureScale("_CurrentTexture", new Vector2(Mathf.Sign(-_flow) * _defaultScale.x, _defaultScale.y));
 			if(Current != 0) _mat.SetInt("_IsCurrentFlowing", 1);
 			else _mat.SetInt("_IsCurrentFlowing", 0);

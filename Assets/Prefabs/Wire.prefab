@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <From>k__BackingField: {fileID: 0}
   <To>k__BackingField: {fileID: 0}
+  _currentSpeed: 0.1
 --- !u!120 &8814302456316345541
 LineRenderer:
   m_ObjectHideFlags: 0

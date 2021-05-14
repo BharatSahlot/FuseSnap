@@ -39,6 +39,7 @@ namespace Game.Circuit
 					if(edge.To.Node == edge.From.Node) continue;
 
 					// stamp as 0 voltage battery
+					// FIXME for battery from is positive and to is negative, but same is not true for wires
 					if(u.Node != 0) StampVoltage(u.Node, vSources + edge.Id, 1);
 					if(v.Node != 0) StampVoltage(v.Node, vSources + edge.Id, -1);
 					StampVCurrent(vSources + edge.Id, 0);
