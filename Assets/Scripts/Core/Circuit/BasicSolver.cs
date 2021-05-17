@@ -12,7 +12,9 @@ namespace Game.Circuit
 		private HashSet<IEdge> _edgeList = new HashSet<IEdge>();
 		private int _vSources;
 
-		public void AddEdge(IEdge edge)
+        public const float wireResistance = 0.01f;
+
+        public void AddEdge(IEdge edge)
 		{
 			// dont add if edge already present
 			// ERROR fix hash code function so that edges where only from and to are interchanged are considered same
@@ -57,7 +59,53 @@ namespace Game.Circuit
 					if(edge.From.Component == null) wires[edge.From.id].Add(edge as Wire);
 				}
 			}
+
+			HashSet<Wire> visited = new HashSet<Wire>();
+			void Bfs(Wire wire)
+			{
+				if(visited.Contains(wire)) return;
+
+				wire.Direction = 1;
+				var st = new Stack<Wire>();
+				st.Push(wire);
+				while(st.Count > 0)
+				{
+					wire = st.Pop();
+					visited.Add(wire);
+
+					var list = new List<Wire>();
+					if(wires[wire.From.id].Count == 2)
+					{
+						Wire other = wires[wire.From.id][0] == wire ? wires[wire.From.id][1] : wires[wire.From.id][0];
+						list.Add(other);
+					}
+					if(wires[wire.To.id].Count == 2)
+					{
+						Wire other = wires[wire.To.id][0] == wire ? wires[wire.To.id][1] : wires[wire.To.id][0];
+						list.Add(other);
+					}
+					foreach(Wire other in list)
+					{
+						int dir = 1;
+						if(wire.To == other.To) dir = wire.Direction;
+						else dir = wire.Direction * -1;
+						if(visited.Contains(other))
+						{
+							if(other.Direction != dir) Debug.LogError("[Wire Direction Assign Error]: Same wire is assigned different directions.");
+						} else 
+						{
+							other.Direction = dir;
+							st.Push(other);
+							visited.Add(wire);
+						}
+					}
+				}
+			}
+			foreach(Wire wire in _edgeList.Where(e => e is Wire)) Bfs(wire);
 	
+			// if list[0].to == list[1].from then same direction current
+			// else opposite direction current
+
 			int wc = 0;
 			foreach(Wire wire in _edgeList.Where(edge => edge is Wire)) wire.Id = wc++;
 			var wireUf = new Game.DSA.UnionFind(wc);
@@ -71,7 +119,12 @@ namespace Game.Circuit
 					uf.UnionSet(list[0].To.id, list[0].From.id);
 				}
 			}
-			foreach(Wire wire in _edgeList.Where(edge => edge is Wire)) wire.Id = wireUf.FindSetCompressed(wire.Id);
+
+			foreach(Wire wire in _edgeList.Where(edge => edge is Wire))
+			{
+				wire.Id = wireUf.FindSetCompressed(wire.Id);
+				wire.Resistance = wireUf.GetComponentSize(wire.Id) * wireResistance;
+			}
 
 			// Terminals connected to only one edge are considered grounds.
 			foreach(Terminal terminal in _terminals)
@@ -87,13 +140,21 @@ namespace Game.Circuit
 		public void Update()
 		{
 			(int nodes, int wires) = AssignNodes();
-			Vector<float> x = Solver.Solve(nodes, wires, _vSources, _edgeList);
+			Vector<float> x = Solver.Solve(nodes, _vSources, _edgeList);
 			foreach(Terminal terminal in _terminals) terminal.Voltage = terminal.Node == 0 ? 0 : x[terminal.Node - 1];
+
+			float[] wireCurrent = new float[wires];
+			foreach(Wire wire in _edgeList.Where(e => e is Wire wire && wire.To.Node != wire.From.Node))
+			{
+				wireCurrent[wire.Id] = wire.Direction * (wire.From.Voltage - wire.To.Voltage) / wire.Resistance;
+			}
+			
 			foreach(IEdge edge in _edgeList)
 			{
 				if(edge is Battery) edge.Current = x[nodes + edge.Id];
 				else if(edge is Fuse fuse) edge.Current = (edge.To.Voltage - edge.From.Voltage) / fuse.resistance;
-				else if(edge is Wire) edge.Current = x[nodes + _vSources + edge.Id];
+				// FIXME get wire current direction
+				else if(edge is Wire wire) wire.Current = wireCurrent[wire.Id] * wire.Direction;
 			}
 		}
     }

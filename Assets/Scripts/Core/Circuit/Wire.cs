@@ -7,7 +7,10 @@ namespace Game.Circuit
 	{
 		[SerializeField] private float _currentSpeed = 0.3f;
 
-		private LineRenderer _line;
+		internal float Resistance { get; set; }
+        public int Direction { get; internal set; }
+
+        private LineRenderer _line;
 		private Material _mat;
 		private float _flow;
 		private Vector2 _defaultScale;
