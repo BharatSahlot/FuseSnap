@@ -7,7 +7,10 @@ namespace Game.Circuit
 	{
 		[SerializeField] private float _currentSpeed = 0.3f;
 
-		private LineRenderer _line;
+		internal float Resistance { get; set; }
+        public int Direction { get; internal set; }
+
+        private LineRenderer _line;
 		private Material _mat;
 		private float _flow;
 		private Vector2 _defaultScale;
@@ -31,7 +34,7 @@ namespace Game.Circuit
 		{
 			_flow += Current * Time.deltaTime * _currentSpeed;
 			_mat.SetFloat("_Current", _flow);
-			_mat.SetTextureScale("_CurrentTexture", new Vector2(Mathf.Sign(-_flow) * _defaultScale.x, _defaultScale.y));
+			_mat.SetTextureScale("_CurrentTexture", new Vector2(Mathf.Sign(-Current) * _defaultScale.x, _defaultScale.y));
 			if(Current != 0) _mat.SetInt("_IsCurrentFlowing", 1);
 			else _mat.SetInt("_IsCurrentFlowing", 0);
 		}

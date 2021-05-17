@@ -133,6 +133,7 @@ namespace Game.Circuit
 					Wire wire = GameObject.Instantiate(wirePrefab);
 					wire.From = _selected;
 
+					bool destroyTerminal = false;
 					if(_highlighted != null)
 					{
 						wire.To = _highlighted;
@@ -143,14 +144,21 @@ namespace Game.Circuit
 						position.z = 0;
 						
 						Terminal terminal = GameObject.Instantiate(terminalPrefab, position, terminalPrefab.transform.rotation);
-						
+						destroyTerminal = true;
+
 						wire.To = terminal;
 						AddTerminal(terminal);	
 					}
 					// only add component edge if the terminals are not already part of the same circuit.
-					if(wire.To.Component != null) _circuit.AddEdge(wire.To.Component);
-					_circuit.AddEdge(wire);
-					_circuit.Update();
+					if(_circuit.AddEdge(wire))
+					{
+						if(wire.To.Component != null) _circuit.AddEdge(wire.To.Component);
+						_circuit.Update();
+					} else
+					{
+						if(destroyTerminal) Destroy(wire.To.gameObject);
+						Destroy(wire.gameObject);
+					}
 				}
 				_selected?.Highlight(false);
 				_highlighted?.Highlight(false);
