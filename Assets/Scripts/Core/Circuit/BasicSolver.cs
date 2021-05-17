@@ -9,20 +9,21 @@ namespace Game.Circuit
     public class Circuit
 	{
 		private HashSet<Terminal> _terminals = new HashSet<Terminal>();
-		private HashSet<IEdge> _edgeList = new HashSet<IEdge>();
+		private HashSet<IEdge> _edgeList = new HashSet<IEdge>(new IEdgeComparer());
 		private int _vSources;
 
         public const float wireResistance = 0.01f;
 
-        public void AddEdge(IEdge edge)
+        public bool AddEdge(IEdge edge)
 		{
 			// dont add if edge already present
-			// ERROR fix hash code function so that edges where only from and to are interchanged are considered same
-			if(!_edgeList.Add(edge)) return;
+			// FIXED fix hash code function so that edges where only from and to are interchanged are considered same
+			if(!_edgeList.Add(edge)) return false;
 
 			AddTerminal(edge.To);
 			AddTerminal(edge.From);
 			if(edge is Battery) edge.Id = _vSources++;
+			return true;
 		}
 
 		private void AddTerminal(Terminal terminal)
