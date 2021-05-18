@@ -38,7 +38,6 @@ namespace Game.Circuit
 			return _terminals.Contains(term);
         }
 
-		// FIXME Voltage source loop when connecting two wires connected to ground to a battery
 		private (int nodes, int wires) AssignNodes()
 		{
 			var uf = new Game.DSA.UnionFind(_terminals.Count);
@@ -88,11 +87,12 @@ namespace Game.Circuit
 					foreach(Wire other in list)
 					{
 						int dir = 1;
-						if(wire.To == other.To) dir = wire.Direction;
+						if(wire.To == other.From || wire.From == other.To) dir = wire.Direction;
 						else dir = wire.Direction * -1;
 						if(visited.Contains(other))
 						{
-							if(other.Direction != dir) Debug.LogError("[Wire Direction Assign Error]: Same wire is assigned different directions.");
+							if(other.Direction != dir)
+								Debug.LogError("[Wire Direction Assign Error]: Same wire is assigned different directions.");
 						} else 
 						{
 							other.Direction = dir;

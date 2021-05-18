@@ -65,11 +65,12 @@ namespace Game.Graphics
 			}
 		}
 
-		public void DrawWire(Vector3 a, Vector3 b, LineRenderer line)
+		public bool DrawWire(Vector3 a, Vector3 b, LineRenderer line)
 		{
 			var start = GetSquareAtWorldPosition(a);
 			var end = GetSquareAtWorldPosition(b);
 			List<(int r, int c)> path = DSA.GridShortestPath.GetShortestPath(_grid, start, end);
+			if(path == null) return false;
 			foreach((int r, int c) in path)
 			{
 				FillSquare(r, c);
@@ -88,6 +89,7 @@ namespace Game.Graphics
 			positions.Add(GetSquareWorldPosition(path[path.Count - 1].Item1, path[path.Count - 1].Item2));
 			line.positionCount = positions.Count;
 			line.SetPositions(positions.ToArray());
+			return true;
 		}
 
 		// this is working
