@@ -14,6 +14,7 @@ namespace Game.Graphics
 		[SerializeField] private int _filledNeighbourCost = 1; // cost of putting wire on top of a square which has a filled neightbour
 		[SerializeField] private LayerMask _circuitLayerMask;
 		
+        /// Square size in world space
 		public float SquareSize { get; private set; }
 		public int R { get; private set; }
 		public int C { get; private set; }
@@ -50,18 +51,23 @@ namespace Game.Graphics
 			if(c + 1 < C) _grid[r, c + 1] += _filledNeighbourCost;
 			if(c - 1 >= 0) _grid[r, c - 1] += _filledNeighbourCost;
 		}
-
-		public void AddComponent(Bounds component)
+     
+		public void AddComponent(Bounds worldSpace, Bounds localSpace, Transform obj)
 		{
-			Vector3 center = component.center;
-			Vector3 extents = component.extents;
+			Vector3 center = worldSpace.center;
+			Vector3 extents = worldSpace.extents;
 			for(float x = center.x - extents.x; x <= center.x + extents.x; x += SquareSize)
 			{
 				for(float y = center.y - extents.y; y <= center.y + extents.y; y += SquareSize)
 				{
-					var (r, c) = GetSquareAtWorldPosition(new Vector3(x, y, 0));
-					FillSquare(r, c);
-				}
+                    var point = new Vector3(x, y, 0);
+                    var (r, c) = GetSquareAtWorldPosition(point);
+                    point = GetSquareWorldPosition(r, c);
+                    if(localSpace.Contains(obj.InverseTransformPoint(point)))
+                    {
+                        FillSquare(r, c);
+				    }
+                }
 			}
 		}
 
@@ -77,7 +83,6 @@ namespace Game.Graphics
 			}
 
 			// try using 2d version
-			// List<Vector3> positions = path.Select((p, i) => (GetSquareWorldPosition(p.Item1, p.Item2))).ToList();
 			List<Vector3> positions = new List<Vector3>();
 			Vector2 dir = Vector2.zero;
 			for(int i = 0; i < path.Count - 1; ++i)
@@ -95,8 +100,8 @@ namespace Game.Graphics
 		// this is working
 		public (int r, int c) GetSquareAtWorldPosition(Vector3 worldPosition)
 		{
-			worldPosition.x += (R * SquareSize) / 2.0f;
-			worldPosition.y += (C * SquareSize) / 2.0f;
+			worldPosition.x += (R * SquareSize / 2.0f); // - (SquareSize / 2.0f);
+			worldPosition.y += (C * SquareSize / 2.0f); // - (SquareSize / 2.0f);
 			int r = (int)(worldPosition.x / SquareSize); 
 			int c = (int)(worldPosition.y / SquareSize); 
 			return (r, c);
@@ -107,8 +112,8 @@ namespace Game.Graphics
 		{
 			Vector3 res = new Vector3();
 			// square world position = center + row * size - something because worldposition 0,0 is at center of screen
-			res.x = (SquareSize / 2) + r * SquareSize - (R * SquareSize / 2.0f);
-			res.y = (SquareSize / 2) + c * SquareSize - (C * SquareSize / 2.0f);
+			res.x = SquareSize + r * SquareSize - (R * SquareSize / 2.0f);
+			res.y = SquareSize + c * SquareSize - (C * SquareSize / 2.0f);
 			return res;
 		}
 
@@ -125,6 +130,12 @@ namespace Game.Graphics
 					Gizmos.DrawWireCube(center, Vector3.one * SquareSize);
 				}
 			}
+            var mousePos = Input.mousePosition;
+            mousePos = Camera.main.ScreenToWorldPoint(mousePos);
+            mousePos.z = 0;
+            var sq = GetSquareAtWorldPosition(mousePos);
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere(GetSquareWorldPosition(sq.r, sq.c), 0.1f);
 		}
 #endif
 	}
