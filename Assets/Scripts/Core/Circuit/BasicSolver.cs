@@ -162,7 +162,6 @@ namespace Game.Circuit
 			{
 				if(edge is Battery) edge.Current = x[nodes + edge.Id];
 				else if(edge is Fuse fuse) edge.Current = (edge.To.Voltage - edge.From.Voltage) / fuse.resistance;
-				// FIXME get wire current direction
 				else if(edge is Wire wire) wire.Current = wireCurrent[wire.Id] * wire.Direction;
 			}
 		}
