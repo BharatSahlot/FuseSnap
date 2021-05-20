@@ -13,6 +13,15 @@ namespace Game.Circuit
 
         public const float wireResistance = 0.01f;
 
+        public bool CanAddEdge(Terminal a, Terminal b)
+        {
+            var temp = new IEdgeSubsititute 
+            {
+                From = a, To = b
+            };
+            return !_edgeList.Contains(temp);
+        }
+
         public bool AddEdge(IEdge edge)
 		{
 			// dont add if edge already present

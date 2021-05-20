@@ -10,6 +10,16 @@ namespace Game.Circuit
 		float Current { get; set; }
 	}
 
+    // Use this class to create a non gui light weight edge.
+    // Useful for cases like testing if two terminals can be connected by a new edge.
+    public class IEdgeSubsititute : IEdge
+    {
+        public Terminal From { get; set; }
+        public Terminal To { get; set; }
+        public int Id { get; set; }
+        public float Current { get; set; }
+    }
+
     public class IEdgeComparer : IEqualityComparer<IEdge>
     {
         public bool Equals(IEdge x, IEdge y)

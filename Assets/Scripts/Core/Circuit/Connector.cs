@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Game.Graphics;
 using System.Linq;
 
-namespace Game.Circuit 
+namespace Game.Circuit
 {
-	// Handle ground terminals properly in Circuit.
-	public class Connector : MonoBehaviour
+    // Handle ground terminals properly in Circuit.
+    public class Connector : MonoBehaviour
 	{
 		public float selectDistance = 5.0f;
 		public Wire wirePrefab;
@@ -85,6 +84,7 @@ namespace Game.Circuit
 				if(res == null || Vector3.Distance(res.transform.position, point) > Vector3.Distance(term.transform.position, point))
 					res = term;
 			}
+            if(res == null || Vector3.Distance(res.transform.position, point) > selectDistance) return null;
 			return res;
 		}
 
@@ -108,56 +108,53 @@ namespace Game.Circuit
 			if(Input.GetMouseButtonDown(0))
             {
                 var point = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
-                SelectNearestTerminalToPoint(point);
+                BeginSelection(point);
             }
 
             if (Input.GetMouseButtonUp(0))
             {
-                JoinSelectedAndHighlighted();
+                EndSelection();
             }
 
             if (Input.GetMouseButton(0) && _selected != null)
             {
                 // highlight the nearest terminal
                 var point = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
-                HighlightNearestTerminalToPoint(point);
+                UpdateSelection(point);
             }
         }
 
-        private void JoinSelectedAndHighlighted()
+        private void CreateWire(Terminal from, Terminal to)
+        {
+            Wire wire = GameObject.Instantiate(wirePrefab);
+            wire.From = from;
+            wire.To = to;
+            if (_circuit.AddEdge(wire))
+            {
+                if (wire.To.Component != null) _circuit.AddEdge(wire.To.Component);
+                if (wire.From.Component != null) _circuit.AddEdge(wire.From.Component);
+                _circuit.Update();
+            }
+        }
+
+        private void EndSelection()
         {
             // join selected to highlighted
             if (_selected != null)
             {
-                Wire wire = GameObject.Instantiate(wirePrefab);
-                wire.From = _selected;
-
-                bool destroyTerminal = false;
-                if (_highlighted != null)
+                if(_highlighted != null)
                 {
-                    wire.To = _highlighted;
-                }
-                else
+                    if(_circuit.CanAddEdge(_selected, _highlighted))
+                    {
+                        CreateWire(_selected, _highlighted);
+                    }
+                } else 
                 {
                     var position = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
                     position.z = 0;
-
                     Terminal terminal = GameObject.Instantiate(terminalPrefab, position, terminalPrefab.transform.rotation);
-                    destroyTerminal = true;
-
-                    wire.To = terminal;
                     AddTerminal(terminal);
-                }
-                // only add component edge if the terminals are not already part of the same circuit.
-                if (_circuit.AddEdge(wire))
-                {
-                    if (wire.To.Component != null) _circuit.AddEdge(wire.To.Component);
-                    _circuit.Update();
-                }
-                else
-                {
-                    if (destroyTerminal) Destroy(wire.To.gameObject);
-                    Destroy(wire.gameObject);
+                    CreateWire(_selected, terminal);
                 }
             }
             _selected?.Highlight(false);
@@ -165,7 +162,7 @@ namespace Game.Circuit
             _selected = _highlighted = null;
         }
 
-        private void HighlightNearestTerminalToPoint(Vector3 point)
+        private void UpdateSelection(Vector3 point)
         {
             point.z = 0;
 
@@ -173,18 +170,18 @@ namespace Game.Circuit
 
             _highlighted?.Highlight(false);
             _highlighted = null;
-            if (Vector3.Distance(point, t.transform.position) <= selectDistance)
+            if(t != null)
             {
                 t.Highlight(true);
                 _highlighted = t;
             }
         }
 
-        private void SelectNearestTerminalToPoint(Vector3 point)
+        private void BeginSelection(Vector3 point)
         {
             point.z = 0;
             var t = GetNearestTerminalToPoint(point, false);
-            if (t != null && Vector3.Distance(point, t.transform.position) <= selectDistance)
+            if (t != null)
             {
                 _selected = t;
                 t.Highlight(true);
