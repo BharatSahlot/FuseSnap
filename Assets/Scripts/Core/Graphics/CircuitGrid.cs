@@ -14,12 +14,15 @@ namespace Game.Graphics
 		[SerializeField] private int _filledNeighbourCost = 1; // cost of putting wire on top of a square which has a filled neightbour
 		[SerializeField] private LayerMask _circuitLayerMask;
 		
-        /// Square size in world space
+        /// Square size in screen space
 		public float SquareSize { get; private set; }
+        /// Square size in world space
+		public float WSquareSize { get; private set; }
 		public int R { get; private set; }
 		public int C { get; private set; }
 
 		private int[,] _grid;
+        private Camera _camera;
 
 		// ^
 		// |
@@ -32,15 +35,15 @@ namespace Game.Graphics
 				Debug.LogError("Multiple CircuitGrid Instances");
 			} else _instance = this;
 
-			Camera camera = Camera.main;
-			Vector3 size = camera.ViewportToWorldPoint(Vector3.zero) - 
-				camera.ViewportToWorldPoint(new Vector3(1.0f, 1.0f, 0));
+			_camera = Camera.main;
 
-			SquareSize = Mathf.Abs(size.x) * _squareToScreenWidthRatio;
-			R = (int)(Mathf.Abs(size.x) / SquareSize); // number of rows is always same -> 1 / _squareToScreenWidthRatio
-			C = (int)(Mathf.Abs(size.y) / SquareSize);
-			
+            SquareSize = Screen.width * _squareToScreenWidthRatio;
+            R = Mathf.RoundToInt(Screen.width / SquareSize);
+            C = Mathf.RoundToInt(Screen.height / SquareSize);
 			_grid = new int[R, C];
+
+            Vector3 size = _camera.ViewportToWorldPoint(new Vector3(1, 1)) - _camera.ViewportToWorldPoint(new Vector3(0, 0));
+            WSquareSize = size.x / R;
 		}
 
 		private void FillSquare(int r, int c)
@@ -56,19 +59,17 @@ namespace Game.Graphics
 		{
 			Vector3 center = worldSpace.center;
 			Vector3 extents = worldSpace.extents;
-			for(float x = center.x - extents.x; x <= center.x + extents.x; x += SquareSize)
-			{
-				for(float y = center.y - extents.y; y <= center.y + extents.y; y += SquareSize)
-				{
-                    var point = new Vector3(x, y, 0);
-                    var (r, c) = GetSquareAtWorldPosition(point);
-                    point = GetSquareWorldPosition(r, c);
-                    if(localSpace.Contains(obj.InverseTransformPoint(point)))
-                    {
-                        FillSquare(r, c);
-				    }
+
+            var (sr, sc) = GetSquareAtWorldPosition(worldSpace.min);
+            var (er, ec) = GetSquareAtWorldPosition(worldSpace.max);
+            for(int r = sr; r <= er; r++)
+            {
+                for(int c = sc; c <= ec; ++c)
+                {
+                    var point = GetSquareWorldPosition(r, c);
+                    if(localSpace.Contains(obj.InverseTransformPoint(point))) FillSquare(r, c);
                 }
-			}
+            }
 		}
 
 		public bool DrawWire(Vector3 a, Vector3 b, LineRenderer line)
@@ -97,24 +98,23 @@ namespace Game.Graphics
 			return true;
 		}
 
-		// this is working
 		public (int r, int c) GetSquareAtWorldPosition(Vector3 worldPosition)
 		{
-			worldPosition.x += (R * SquareSize / 2.0f); // - (SquareSize / 2.0f);
-			worldPosition.y += (C * SquareSize / 2.0f); // - (SquareSize / 2.0f);
-			int r = (int)(worldPosition.x / SquareSize); 
-			int c = (int)(worldPosition.y / SquareSize); 
-			return (r, c);
+            var position = Camera.main.WorldToScreenPoint(worldPosition);
+            position.z = 0;
+            int r = Mathf.Clamp((int)(position.x / SquareSize), 0, R - 1);
+            int c = Mathf.Clamp((int)(position.y / SquareSize), 0, C - 1);
+            return (r, c);
 		}
 
-		// this is working
 		public Vector3 GetSquareWorldPosition(int r, int c)
 		{
 			Vector3 res = new Vector3();
-			// square world position = center + row * size - something because worldposition 0,0 is at center of screen
-			res.x = SquareSize + r * SquareSize - (R * SquareSize / 2.0f);
-			res.y = SquareSize + c * SquareSize - (C * SquareSize / 2.0f);
-			return res;
+            res.x = (SquareSize / 2.0f) + r * SquareSize;
+            res.y = (SquareSize / 2.0f) + c * SquareSize;
+			res = Camera.main.ScreenToWorldPoint(res);
+            res.z = 0;
+            return res;
 		}
 
 #if UNITY_EDITOR
@@ -127,7 +127,7 @@ namespace Game.Graphics
 					Vector3 center = GetSquareWorldPosition(r, c);
 					if(_grid[r, c] > 1) Gizmos.color = Color.red;
 					else Gizmos.color = Color.white;
-					Gizmos.DrawWireCube(center, Vector3.one * SquareSize);
+					Gizmos.DrawWireCube(center, Vector3.one * WSquareSize);
 				}
 			}
             var mousePos = Input.mousePosition;
