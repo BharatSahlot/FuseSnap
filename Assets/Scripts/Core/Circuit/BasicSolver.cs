@@ -80,7 +80,7 @@ namespace Game.Circuit
 				else if(edge is Fuse fuse)
                 {
                     edge.Current = (edge.To.Voltage - edge.From.Voltage) / fuse.resistance;
-                    if(edge.Current > fuse.max_current) overHeatedFuses.Add(fuse);
+                    if(Mathf.Abs(edge.Current) > fuse.max_current) overHeatedFuses.Add(fuse);
                 }
                 else if(edge is Wire wire) wire.Current = wireCurrent[wire.Id] * wire.Direction;
 			}

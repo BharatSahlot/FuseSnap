@@ -46,17 +46,21 @@ namespace Game.Graphics
             WSquareSize = size.x / R;
 		}
 
-		private void FillSquare(int r, int c)
+
+		private void FillSquare(int r, int c, int cost, int nCost)
 		{
-			_grid[r, c] += _filledSquareCost;
-			if(r + 1 < R) _grid[r + 1, c] += _filledNeighbourCost;
-			if(r - 1 >= 0) _grid[r - 1, c] += _filledNeighbourCost;
-			if(c + 1 < C) _grid[r, c + 1] += _filledNeighbourCost;
-			if(c - 1 >= 0) _grid[r, c - 1] += _filledNeighbourCost;
+			_grid[r, c] += cost;
+			if(r + 1 < R) _grid[r + 1, c] += nCost;
+			if(r - 1 >= 0) _grid[r - 1, c] += nCost;
+			if(c + 1 < C) _grid[r, c + 1] += nCost;
+			if(c - 1 >= 0) _grid[r, c - 1] += nCost;
 		}
-     
-		public void AddComponent(Bounds worldSpace, Bounds localSpace, Transform obj)
-		{
+
+        private void FillSquare(int r, int c) => FillSquare(r, c, _filledSquareCost, _filledNeighbourCost);
+        private void UnFillSquare(int r, int c) => FillSquare(r, c, -_filledSquareCost, -_filledNeighbourCost);
+		
+		public void FillBounds(Bounds worldSpace, Bounds localSpace, Transform obj, int cost, int nCost)
+        {
 			Vector3 center = worldSpace.center;
 			Vector3 extents = worldSpace.extents;
 
@@ -67,9 +71,22 @@ namespace Game.Graphics
                 for(int c = sc; c <= ec; ++c)
                 {
                     var point = GetSquareWorldPosition(r, c);
-                    if(localSpace.Contains(obj.InverseTransformPoint(point))) FillSquare(r, c);
+                    if(localSpace.Contains(obj.InverseTransformPoint(point)))
+                    {
+                        FillSquare(r, c, cost, nCost);
+                    }
                 }
             }
+        }
+
+		public void AddComponent(Bounds worldSpace, Bounds localSpace, Transform obj)
+		{
+            FillBounds(worldSpace, localSpace, obj, _filledSquareCost, _filledNeighbourCost);
+		}
+		
+        public void RemoveComponent(Bounds worldSpace, Bounds localSpace, Transform obj)
+		{
+            FillBounds(worldSpace, localSpace, obj, -_filledSquareCost, -_filledNeighbourCost);
 		}
 
 		public bool DrawWire(Vector3 a, Vector3 b, LineRenderer line)

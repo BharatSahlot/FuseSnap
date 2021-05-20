@@ -25,6 +25,7 @@ namespace Game.Circuit
         protected virtual void OnDestroy()
         {
             // transform.DetachChildren();
+			CircuitGrid.Instance.RemoveComponent(_sprite.bounds, _sprite.sprite.bounds, transform);
         }
     }
 }
