@@ -6,6 +6,7 @@ namespace Game.Circuit
 	public class Wire : MonoEdge
 	{
 		[SerializeField] private float _currentSpeed = 0.3f;
+        [SerializeField] private bool _drawWire = true;
 
 		internal float Resistance { get; set; }
         public int Direction { get; internal set; }
@@ -24,14 +25,13 @@ namespace Game.Circuit
 		
 		protected override void Start()
 		{
-			// _line.positionCount = 2;
-			// _line.SetPosition(0, To.transform.position);
-			// _line.SetPosition(1, From.transform.position);
-			Graphics.CircuitGrid.Instance.DrawWire(From.transform.position, To.transform.position, _line);
+			if(_drawWire) Graphics.CircuitGrid.Instance.DrawWire(From.transform.position, To.transform.position, _line);
 		}
 
 		private void Update()
 		{
+            if(!_drawWire) return;
+
 			_flow += Current * Time.deltaTime * _currentSpeed;
 			_mat.SetFloat("_Current", _flow);
 			_mat.SetTextureScale("_CurrentTexture", new Vector2(Mathf.Sign(-Current) * _defaultScale.x, _defaultScale.y));

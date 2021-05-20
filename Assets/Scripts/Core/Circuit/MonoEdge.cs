@@ -19,7 +19,7 @@ namespace Game.Circuit
 
 		protected virtual void Start()
 		{
-			CircuitGrid.Instance.AddComponent(_sprite.bounds);
+			CircuitGrid.Instance.AddComponent(_sprite.bounds, _sprite.sprite.bounds, transform);
 		}
     }
 }
