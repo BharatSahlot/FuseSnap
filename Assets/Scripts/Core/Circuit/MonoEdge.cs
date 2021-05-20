@@ -21,5 +21,10 @@ namespace Game.Circuit
 		{
 			CircuitGrid.Instance.AddComponent(_sprite.bounds, _sprite.sprite.bounds, transform);
 		}
+
+        protected virtual void OnDestroy()
+        {
+            // transform.DetachChildren();
+        }
     }
 }

@@ -12,7 +12,6 @@ namespace Game.Circuit
 		public Terminal terminalPrefab;
 
 		private List<Terminal> _terminals = new List<Terminal>();
-		private List<IEdge> _defaultEdges = new List<IEdge>();
 		private Terminal _selected = null, _highlighted = null;
 
 		private Camera _mainCamera = null;
@@ -62,19 +61,18 @@ namespace Game.Circuit
 			_circuit.Update();
 		}
 
-		public void AddTerminal(Terminal terminal)
-		{
-			_terminals.Add(terminal);
-		}
+		public void AddTerminal(Terminal terminal) 
+        {
+            _terminals.Add(terminal);
+            terminal.onDestroyed += () => RemoveTerminal(terminal);
+        }
+        public void RemoveTerminal(Terminal terminal) => _terminals.Remove(terminal);
 
 		/// <param name="Point">World space vector3. But works best if point.z = 0.</param>
 		/// <param name="allowOrphan">Whether to allow returning terminal which is not part of a circuit.</param>
 		private Terminal GetNearestTerminalToPoint(Vector3 point, bool allowOrphan, int excludeNode = -1)
 		{
-			if(_terminals.Count == 0) return null;
-			if(_terminals.Count == 1) return null;
 			Terminal res = null;
-
 			foreach(Terminal term in _terminals)
 			{
 				if(term.ground) continue; // players cant connect to grounds

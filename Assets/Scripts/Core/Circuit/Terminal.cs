@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using System;
 
 namespace Game.Circuit
 {
@@ -16,6 +17,8 @@ namespace Game.Circuit
 		public float Voltage { get; internal set; }
 
 		private SpriteRenderer _sprite;
+        public Action onDestroyed;
+
         private void Awake()
 		{
 			_sprite = GetComponent<SpriteRenderer>();
@@ -26,6 +29,11 @@ namespace Game.Circuit
 			if(highlight) _sprite.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
 			else _sprite.color = new Color(1.0f, 1.0f, 1.0f, 0.5f);
 		}
+
+        public void OnDestroy()
+        {
+            onDestroyed.Invoke();
+        }
 
 #if UNITY_EDITOR
 		private void OnDrawGizmos()

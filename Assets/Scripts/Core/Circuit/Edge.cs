@@ -8,7 +8,7 @@ namespace Game.Circuit
 		Terminal To { get; set; }
 		int Id { get; set; }
 		float Current { get; set; }
-	}
+    }
 
     // Use this class to create a non gui light weight edge.
     // Useful for cases like testing if two terminals can be connected by a new edge.
