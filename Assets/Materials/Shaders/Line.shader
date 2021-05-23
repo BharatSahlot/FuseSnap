@@ -6,6 +6,7 @@ Shader "Unlit/Line"
         _CurrentTexture ("Current Texture", 2D) = "white" {}
 		_Current ("Current", float) = 0
         _IsCurrentFlowing ("Is current flowing", int) = 0
+        _Color ("Color", Color) = (1,1,1,1)
 	}
     SubShader
     {
@@ -48,6 +49,8 @@ Shader "Unlit/Line"
 			float _Current;
             int _IsCurrentFlowing;
 
+            fixed4 _Color;
+
             v2f vert (appdata v)
             {
                 v2f o;
@@ -65,7 +68,7 @@ Shader "Unlit/Line"
                 float2 uv = i.uv + float2(_Current, 0);
 				fixed4 col = tex2D(_NoCurrentTexture, TRANSFORM_TEX(uv, _NoCurrentTexture));
 				fixed4 col2 = tex2D(_CurrentTexture, TRANSFORM_TEX(uv, _CurrentTexture));
-                return lerp(col, col2, _IsCurrentFlowing);
+                return lerp(col, col2, _IsCurrentFlowing) * _Color;
                 // return col * (1 - _IsCurrentFlowing) + col2 * _IsCurrentFlowing;
             }
             ENDCG

@@ -42,7 +42,7 @@ namespace Game.Circuit
 
 				if(t.Component != null && _circuit.AddEdge(t.Component))
 				{
-                    q.Enqueue(t.Component.To == t ? t.Component.From : t);
+                    q.Enqueue(t.Component.To == t ? t.Component.From : t.Component.To);
 				}
 				visited.Add(t);
 				foreach(Wire wire in wires)
