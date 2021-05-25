@@ -4,18 +4,9 @@ using System;
 
 namespace Game.Circuit
 {
-    public class Terminal : MonoBehaviour
+    public class MonoTerminal : MonoBehaviour
 	{
-		public bool ground = false;
-        public int player = 0;
-
-		private MonoEdge _component = null;
-		public MonoEdge Component => _component ??= GetComponentInParent<MonoEdge>();
-		internal int id = 0;
-
-		public int Node { get; internal set; }
-
-		public float Voltage { get; internal set; }
+        public Terminal Terminal { get; set; }
 
 		private SpriteRenderer _sprite;
         public Action onDestroyed;
@@ -41,7 +32,7 @@ namespace Game.Circuit
 		{
 			GUIStyle style = new GUIStyle();
 			style.fontSize = 20;
-			Handles.Label(transform.position, $"{Node}: {Voltage}", style);
+			Handles.Label(transform.position, $"{Terminal.Node}: {Terminal.Voltage}", style);
 		}
 #endif
     }

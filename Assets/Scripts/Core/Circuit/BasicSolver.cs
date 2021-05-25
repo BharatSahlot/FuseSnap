@@ -8,30 +8,33 @@ namespace Game.Circuit
     public class Circuit
 	{
 		private HashSet<Terminal> _terminals = new HashSet<Terminal>();
-		private HashSet<IEdge> _edgeList = new HashSet<IEdge>(new IEdgeComparer());
-        private List<int> _edgeCount = new List<int>();
+		private HashSet<Edge> _edgeList = new HashSet<Edge>();
+        public Terminal Ground { get; private set; }
 
-        public const float wireResistance = 0.01f;
         public bool HasTerminal(Terminal term) => _terminals.Contains(term);
+
+        public Circuit(Terminal ground)
+        {
+            Ground = ground;
+            AddTerminal(ground);
+        }
 
         public bool CanAddEdge(Terminal a, Terminal b)
         {
-            var temp = new IEdgeSubsititute 
-            {
-                From = a, To = b
-            };
+            var temp = new Connection(a, b);
             return !_edgeList.Contains(temp);
         }
 
-        public bool AddEdge(IEdge edge)
+        public bool AddEdge(Edge edge)
 		{
 			// dont add if edge already present
 			if(!_edgeList.Add(edge)) return false;
-
-			AddTerminal(edge.To);
-			AddTerminal(edge.From);
-            _edgeCount[edge.To.id]++;
-            _edgeCount[edge.From.id]++;
+            foreach(var t in edge)
+            {
+                AddTerminal(t);
+                t.Edges.Add(edge);
+                if(t.Component != null && t.Component != edge) AddEdge(t.Component);
+            }
 			return true;
 		}
 
@@ -39,136 +42,123 @@ namespace Game.Circuit
 		{
 			if(_terminals.Add(terminal))
 			{
-				terminal.id = _terminals.Count - 1;
-                _edgeCount.Add(0);
+				terminal.Id = _terminals.Count - 1;
 			}
 		}
 
         private void Regen()
         {
             int id = 0;
-            _edgeCount = new List<int>(_edgeCount.Count);
             foreach(Terminal terminal in _terminals)
             {
-                terminal.id = id++;
-                _edgeCount.Add(0);
-            }
-
-            foreach(IEdge edge in _edgeList)
-            {
-                _edgeCount[edge.To.id]++;
-                _edgeCount[edge.From.id]++;
+                terminal.Id = id++;
             }
         }
 
-        public void Update()
-		{
-			(int nodes, int wires, int vSources) = AssignNodes();
-			Vector<float> x = Solver.Solve(nodes, vSources, _edgeList);
+        public void Solve()
+        {
+            (int nodes, int wires, int vSources) = AssignNodes();
+            Vector<float> x = Solver.Solve(nodes, vSources, _edgeList);
 			foreach(Terminal terminal in _terminals) terminal.Voltage = terminal.Node == 0 ? 0 : x[terminal.Node - 1];
-
-			float[] wireCurrent = new float[wires];
-			foreach(Wire wire in _edgeList.Where(e => e is Wire wire && wire.To.Node != wire.From.Node))
-			{
-				wireCurrent[wire.Id] = wire.Direction * (wire.From.Voltage - wire.To.Voltage) / wire.Resistance;
-			}
-			
-            HashSet<IEdge> overHeatedFuses = new HashSet<IEdge>();
-			foreach(IEdge edge in _edgeList)
-			{
-				if(edge is Battery) edge.Current = x[nodes + edge.Id];
-				else if(edge is Fuse fuse)
+            
+            foreach(Resistor resistor in _edgeList)
+            {
+                if(resistor == null) continue;
+                if(resistor[0].Node != resistor[1].Node)
                 {
-                    edge.Current = (edge.To.Voltage - edge.From.Voltage) / fuse.resistance;
-                    if(Mathf.Abs(edge.Current) > fuse.max_current) overHeatedFuses.Add(fuse);
+                    float current = (resistor[0].Voltage - resistor[1].Voltage) / resistor.CombinedResistance;
+                    foreach(Resistor res in _edgeList)
+                    {
+                        if(res != null && res.CombinedId == resistor.CombinedId) 
+                        {
+                            res.SetCurrent(current * res.Direction);
+                        }
+                    }
                 }
-                else if(edge is Wire wire) wire.Current = wireCurrent[wire.Id] * wire.Direction;
-			}
-            // TODO remove any overheated fuse, then do a bfs from the ground and remove any edges/terminals not reachable from the ground
-		    var toRemove = GetUnreachableEdges(overHeatedFuses);
-            foreach(var fuse in overHeatedFuses) RemoveEdge(fuse); 
-            foreach(var edge in toRemove) RemoveEdge(edge);
-
-            // Rebuild every already existing info
-            if(overHeatedFuses.Count > 0) Regen();
+            }
+            foreach(Battery battery in _edgeList)
+            {
+                if(battery == null) continue;
+                battery.SetCurrent(x[nodes + battery.Id]);
+            }
+            // onSolve.Invoke();
         }
 
 		private (int nodes, int wires, int vSources) AssignNodes()
         {
             var uf = new Game.DSA.UnionFind(_terminals.Count);
-            List<Wire>[] wires = new List<Wire>[_terminals.Count];
+            var resistors = new List<Resistor>[_terminals.Count];
 
             int vSources = 0;
-            foreach (IEdge edge in _edgeList)
+            foreach(Edge edge in _edgeList)
             {
-                if (edge is Wire)
+                if(edge is Resistor res)
                 {
-                    if (wires[edge.To.id] == null) wires[edge.To.id] = new List<Wire>();
-                    if (wires[edge.From.id] == null) wires[edge.From.id] = new List<Wire>();
-
-                    if (edge.To.Component == null) wires[edge.To.id].Add(edge as Wire);
-                    if (edge.From.Component == null) wires[edge.From.id].Add(edge as Wire);
+                    foreach(var t in edge)
+                    {
+                        if(resistors[t.Id] == null) resistors[t.Id] = new List<Resistor>();
+                        if(t.Component is Resistor) resistors[t.Id].Add(res);
+                    }
                 } else if(edge is Battery) edge.Id = vSources++;
             }
 
-            AssignWireDirections(wires);
+            AssignWireDirections(resistors);
 
             int wc = 0;
-            foreach (Wire wire in _edgeList.Where(edge => edge is Wire)) wire.Id = wc++;
+            foreach(Resistor res in _edgeList.Where(res => res is Resistor)) res.CombinedId = wc++;
+
             var wireUf = new Game.DSA.UnionFind(wc);
-            foreach (List<Wire> list in wires)
+            foreach(var list in resistors)
             {
                 if (list == null) continue;
                 if (list.Count == 2)
                 {
                     wireUf.UnionSet(list[0].Id, list[1].Id);
                     // union set any one of the uncommon terminal to the common terminal
-                    uf.UnionSet(list[0].To.id, list[0].From.id);
+                    uf.UnionSet(list[0][0].Id, list[0][1].Id);
                 }
             }
 
-            foreach (Wire wire in _edgeList.Where(edge => edge is Wire))
+            foreach(Resistor res in _edgeList)
             {
-                wire.Id = wireUf.FindSetCompressed(wire.Id);
-                wire.Resistance = wireUf.GetComponentSize(wire.Id) * wireResistance;
+                if(res == null) continue;
+
+                res.CombinedId = wireUf.FindSetCompressed(res.Id);
+                res.CombinedResistance = wireUf.GetComponentSize(res.Id) * res.CombinedResistance;
             }
 
             foreach (Terminal terminal in _terminals)
             {
                 // Terminals connected to only one edge are considered grounds.
-                if (_edgeCount[terminal.id] == 1) uf.UnionSet(0, terminal.id);
-                if (terminal.ground) uf.UnionSet(0, terminal.id); // there can be some designer placed grounds in the circuit
+                if (terminal.Edges.Count == 1) uf.UnionSet(0, terminal.Id);
             }
-
-            foreach (Terminal terminal in _terminals) terminal.Node = uf.FindSetCompressed(terminal.id);
+            foreach (Terminal terminal in _terminals) terminal.Node = uf.FindSetCompressed(terminal.Id);
             return (uf.Components - 1, wireUf.Components, vSources);
         }
-
 
         
         /// <summary>
         /// Marks all edges reachable from ground node and returns all the edges not reachable from ground node.
         /// <summary/>
-        private IEnumerable<IEdge> GetUnreachableEdges(HashSet<IEdge> exclude)
+        private IEnumerable<Edge> GetUnreachableEdges(HashSet<Edge> exclude)
         {
             // bfs from ground
-            Terminal ground = _terminals.First(t => t.ground);
             DSA.UnionFind uf = new DSA.UnionFind(_terminals.Count);
-            foreach(IEdge edge in _edgeList)
+            foreach(Edge edge in _edgeList)
             {
                 if(exclude.Contains(edge)) continue;
-                if(!(edge is Wire))
+                if(!(edge is Resistor))
                 {
-                    uf.UnionSet(edge.To.id, 0);
-                    uf.UnionSet(edge.From.id, 0);
+                    uf.UnionSet(edge[0].Id, 0);
+                    uf.UnionSet(edge[1].Id, 0);
                 }
-                uf.UnionSet(edge.To.id, edge.From.id);
+                uf.UnionSet(edge[0].Id, edge[1].Id);
             }
-            List<IEdge> edges = new List<IEdge>();
-            foreach(IEdge edge in _edgeList)
+            var edges = new List<Edge>();
+            foreach(var edge in _edgeList)
             {
                 if(exclude.Contains(edge)) continue;
-                if(uf.FindSet(edge.To.id) != 0 && uf.FindSet(edge.From.id) != 0)
+                if(uf.FindSet(edge[0].Id) != 0 && uf.FindSet(edge[1].Id) != 0)
                 {
                     edges.Add(edge);
                 }
@@ -176,74 +166,102 @@ namespace Game.Circuit
             return edges;
         }
 
-        private void RemoveEdge(IEdge edge)
+        private void RemoveEdge(Edge edge)
         {
-            _edgeCount[edge.To.id]--;
-            _edgeCount[edge.From.id]--;
             _edgeList.Remove(edge);
-
-            if(_edgeCount[edge.To.id] == 0) RemoveTerminal(edge.To);
-            if(_edgeCount[edge.From.id] == 0) RemoveTerminal(edge.From);
-
-            if(edge is MonoEdge e)
+            foreach(var t in edge)
             {
-                e.transform.DetachChildren();
-                GameObject.Destroy(e.gameObject);
+                t.Edges.Remove(edge);
+                if(t.Edges.Count == 0) RemoveTerminal(t);
             }
+            // Destroy itself
+            edge.OnRemove();
         }
 
         private void RemoveTerminal(Terminal terminal)
         {
             _terminals.Remove(terminal);
-            GameObject.Destroy(terminal.gameObject);
+            terminal.OnRemove();
         }
 
-        private void AssignWireDirections(List<Wire>[] wires)
+        private void AssignDirections()
         {
-            HashSet<Wire> visited = new HashSet<Wire>();
-            void Bfs(Wire wire)
-            {
-                if (visited.Contains(wire)) return;
+            var q = new Stack<Terminal>();
+            var visited = new HashSet<Edge>();
 
-                wire.Direction = 1;
-                var st = new Stack<Wire>();
-                st.Push(wire);
+            if(Ground.Edges.Count < 1) return;
+
+            Ground.Edges[0].Direction = 1;
+            visited.Add(Ground.Edges[0]);
+            q.Push(Ground);
+
+            while(q.Count > 0)
+            {
+                Terminal t = q.Pop();
+
+                Edge r = t.Edges.First(e => visited.Contains(e));
+                foreach(Edge e in t.Edges)
+                {
+                    if(e == r) continue;
+
+                    int dir = 0;
+                    if(r[0] == e[1] || r[1] == e[0]) dir = r.Direction;
+                    else dir = -r.Direction;
+
+                    if(visited.Contains(e))
+                    {
+                        if(e.Direction != dir)
+                        {
+                            Debug.LogError("Cannot assign directions to edges.");
+                        }
+                    } else 
+                    {
+                        q.Push(e[0] == t ? e[1] : e[0]);
+                        visited.Add(e);
+                    }
+                }
+            }
+        }
+
+        private void AssignWireDirections(List<Resistor>[] resistors)
+        {
+            HashSet<Resistor> visited = new HashSet<Resistor>();
+            void Bfs(Resistor res)
+            {
+                if (visited.Contains(res)) return;
+
+                res.Direction = 1;
+                var st = new Stack<Resistor>();
+                st.Push(res);
                 while (st.Count > 0)
                 {
-                    wire = st.Pop();
-                    visited.Add(wire);
+                    res = st.Pop();
+                    visited.Add(res);
+                    foreach(var t in res)
+                    {
+                        if(resistors[t.Id].Count == 2)
+                        {
+                            var other = resistors[t.Id].First(r => r != res);
+                            int dir = 1;
+                            if (res[1] == other[0] || res[0] == other[1]) dir = res.Direction;
+                            else dir = res.Direction * -1;
 
-                    var list = new List<Wire>();
-                    if (wires[wire.From.id].Count == 2)
-                    {
-                        Wire other = wires[wire.From.id][0] == wire ? wires[wire.From.id][1] : wires[wire.From.id][0];
-                        list.Add(other);
-                    }
-                    if (wires[wire.To.id].Count == 2)
-                    {
-                        Wire other = wires[wire.To.id][0] == wire ? wires[wire.To.id][1] : wires[wire.To.id][0];
-                        list.Add(other);
-                    }
-                    foreach (Wire other in list)
-                    {
-                        int dir = 1;
-                        if (wire.To == other.From || wire.From == other.To) dir = wire.Direction;
-                        else dir = wire.Direction * -1;
-                        if (visited.Contains(other))
-                        {
-                            if (other.Direction != dir)
-                                Debug.LogError("[Wire Direction Assign Error]: Same wire is assigned different directions.");
-                        }
-                        else
-                        {
-                            other.Direction = dir;
-                            st.Push(other);
-                            visited.Add(wire);
+                            if (visited.Contains(other))
+                            {
+                                if (other.Direction != dir)
+                                    Debug.LogError("[Resistor Direction Assign Error]: Same wire is assigned different directions.");
+                            }
+                            else
+                            {
+                                other.Direction = dir;
+                                st.Push(other);
+                                visited.Add(res);
+                            }
                         }
                     }
                 }
             }
-            foreach (Wire wire in _edgeList.Where(e => e is Wire)) Bfs(wire);
+            foreach (Resistor res in _edgeList) if(res != null) Bfs(res);
         }
     }
 }

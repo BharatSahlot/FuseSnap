@@ -3,12 +3,11 @@ using Game.Graphics;
 
 namespace Game.Circuit
 {
-    public abstract class MonoEdge : MonoBehaviour, IEdge
+    public abstract class MonoEdge : MonoBehaviour
     {
-        [field: SerializeField] public Terminal From { get; set; }
-        [field: SerializeField] public Terminal To { get; set; }
-        public int Id { get; set; }
-		public float Current { get; set; }
+        public Edge Edge { get; set; }
+        public MonoTerminal A { get; set; }
+        public MonoTerminal B { get; set; }
 
         protected SpriteRenderer _sprite;
 

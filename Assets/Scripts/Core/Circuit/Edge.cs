@@ -2,52 +2,59 @@ using System.Collections.Generic;
 
 namespace Game.Circuit
 {
+    public enum EdgeTypes
+    {
+        Wire, Battery, Fuse
+    }
+
+    [System.Serializable]
     public class Terminal
     {
         public int Id { get; internal set; }
-        public List<Edge> Edges { get; set; }
+        public int Player { get; set; }
+        public int Node { get; internal set; }
+        public float Voltage { get; internal set; }
+        public Edge Component { get; internal set; }
+        public List<Edge> Edges { get; internal set; }
+        
+        public virtual void OnRemove() {}
     }
 
-    public class Edge
+    [System.Serializable]
+    public class Edge : Connection
     {
         public int Id { get; internal set; }
-        public (Terminal, Terminal) Connection { get; set; }
+        public int Player { get; set; }
         public float Current { get; private set; }
+        public int Direction { get; internal set; }
+        public Edge(Terminal a, Terminal b) : base(a, b) {}
 
         public virtual void SetCurrent(float current) => Current = current;
+        public virtual void OnRemove() {}
     }
 
-    public interface IEdge
-	{
-		Terminal From { get; set; }
-		Terminal To { get; set; }
-		int Id { get; set; }
-		float Current { get; set; }
-    }
-
-    // Use this class to create a non gui light weight edge.
-    // Useful for cases like testing if two terminals can be connected by a new edge.
-    public class IEdgeSubsititute : IEdge
+    [System.Serializable]
+    public class Battery : Edge
     {
-        public Terminal From { get; set; }
-        public Terminal To { get; set; }
-        public int Id { get; set; }
-        public float Current { get; set; }
+        public float Voltage { get; set; }
+        public Battery(Terminal a, Terminal b) : base(a, b) {}
     }
-
-    public class IEdgeComparer : IEqualityComparer<IEdge>
+    
+    [System.Serializable]
+    public class Resistor : Edge
     {
-        public bool Equals(IEdge x, IEdge y)
-        {
-			return (x.From == y.From && x.To == y.To) || (x.From == y.To && x.To == y.From);
-        }
-
-        public int GetHashCode(IEdge edge)
-        {
-			int h1 = edge.From.GetHashCode();
-			int h2 = edge.To.GetHashCode();
-			if(h1 > h2) Game.Helper.Swap(ref h1, ref h2);
-			return 31 * h1 + 17 * h2;
-        }
+        public float Resistance { get; set; }
+        // Id of series of resistors in the circuit
+        internal int CombinedId { get; set; }
+        // Combined resistance of a series of resistors
+        internal float CombinedResistance { get; set; }
+        public Resistor(Terminal a, Terminal b) : base(a, b) {}
+    }
+    
+    [System.Serializable]
+    public class Fuse : Resistor
+    {
+        public float MaxCurrent { get; set; }
+        public Fuse(Terminal a, Terminal b) : base(a, b) {}
     }
 }
