@@ -2,6 +2,21 @@ using System.Collections.Generic;
 
 namespace Game.Circuit
 {
+    public class Terminal
+    {
+        public int Id { get; internal set; }
+        public List<Edge> Edges { get; set; }
+    }
+
+    public class Edge
+    {
+        public int Id { get; internal set; }
+        public (Terminal, Terminal) Connection { get; set; }
+        public float Current { get; private set; }
+
+        public virtual void SetCurrent(float current) => Current = current;
+    }
+
     public interface IEdge
 	{
 		Terminal From { get; set; }

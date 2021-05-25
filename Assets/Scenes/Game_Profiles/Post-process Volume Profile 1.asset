@@ -18,10 +18,10 @@ MonoBehaviour:
     value: 1
   intensity:
     overrideState: 1
-    value: 1.86
+    value: 0.78
   threshold:
     overrideState: 1
-    value: 0.51
+    value: 0.58
   softKnee:
     overrideState: 0
     value: 0.5
@@ -74,7 +74,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34a00f7e5fd2decf9ba904dbe0f0cd9f, type: 3}
   m_Name: Blur
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   enabled:
     overrideState: 1
     value: 1
@@ -83,7 +83,7 @@ MonoBehaviour:
     value: 2
   blurSize:
     overrideState: 1
-    value: 0.1
+    value: 0.13
   blurIterations:
     overrideState: 1
     value: 1

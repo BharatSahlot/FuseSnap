@@ -19,13 +19,16 @@ namespace Game.Circuit
 
 		protected virtual void Start()
 		{
-			CircuitGrid.Instance.AddComponent(_sprite.bounds, _sprite.sprite.bounds, transform);
+            if(_sprite == null) return;
+			CircuitGrid.Instance?.AddComponent(_sprite.bounds, _sprite.sprite.bounds, transform);
 		}
 
+        // FIXME doing anything in ondestroy have problems in unity editor when exiting play mode.
         protected virtual void OnDestroy()
         {
             // transform.DetachChildren();
-			CircuitGrid.Instance.RemoveComponent(_sprite.bounds, _sprite.sprite.bounds, transform);
+            if(_sprite == null) return;
+            CircuitGrid.Instance?.RemoveComponent(_sprite.bounds, _sprite.sprite.bounds, transform);
         }
     }
 }

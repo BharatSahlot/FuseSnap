@@ -10,12 +10,15 @@ namespace Game.Circuit
 		public float selectDistance = 5.0f;
 		public Wire wirePrefab;
 		public Terminal terminalPrefab;
+        [SerializeField] private Color[] _colors;
 
 		private List<Terminal> _terminals = new List<Terminal>();
 		private Terminal _selected = null, _highlighted = null;
 
 		private Camera _mainCamera = null;
 		private Circuit _circuit = new Circuit();
+        private int _currentPlayer = 0;
+
 
 		private void Awake()
 		{
@@ -34,6 +37,9 @@ namespace Game.Circuit
 			{
 				if(wire.To.ground) q.Enqueue(wire.To);
 				if(wire.From.ground) q.Enqueue(wire.From);
+
+                wire.GetComponent<LineRenderer>().startColor = _colors[wire.From.player];
+                wire.GetComponent<LineRenderer>().endColor = _colors[wire.To.player];
 			}
 			while(q.Count > 0)
 			{
@@ -127,6 +133,8 @@ namespace Game.Circuit
             Wire wire = GameObject.Instantiate(wirePrefab);
             wire.From = from;
             wire.To = to;
+            wire.GetComponent<LineRenderer>().startColor = _colors[wire.To.player];
+            wire.GetComponent<LineRenderer>().endColor = _colors[wire.From.player];
             if (_circuit.AddEdge(wire))
             {
                 if (wire.To.Component != null) _circuit.AddEdge(wire.To.Component);
@@ -144,6 +152,12 @@ namespace Game.Circuit
                 {
                     if(_circuit.CanAddEdge(_selected, _highlighted))
                     {
+                        if(_highlighted.player == -1) _highlighted.player = _currentPlayer;
+                        if(_highlighted.Component != null)
+                        {
+                            if(_highlighted.Component.To.player == -1) _highlighted.Component.To.player = _currentPlayer;
+                            if(_highlighted.Component.From.player == -1) _highlighted.Component.From.player = _currentPlayer;
+                        }
                         CreateWire(_selected, _highlighted);
                     }
                 } else 
@@ -151,9 +165,11 @@ namespace Game.Circuit
                     var position = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
                     position.z = 0;
                     Terminal terminal = GameObject.Instantiate(terminalPrefab, position, terminalPrefab.transform.rotation);
+                    terminal.player = _currentPlayer;
                     AddTerminal(terminal);
                     CreateWire(_selected, terminal);
                 }
+                _currentPlayer ^= 1;
             }
             _selected?.Highlight(false);
             _highlighted?.Highlight(false);

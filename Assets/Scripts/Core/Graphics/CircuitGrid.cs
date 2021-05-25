@@ -117,7 +117,7 @@ namespace Game.Graphics
 
 		public (int r, int c) GetSquareAtWorldPosition(Vector3 worldPosition)
 		{
-            var position = Camera.main.WorldToScreenPoint(worldPosition);
+            var position = _camera.WorldToScreenPoint(worldPosition);
             position.z = 0;
             int r = Mathf.Clamp((int)(position.x / SquareSize), 0, R - 1);
             int c = Mathf.Clamp((int)(position.y / SquareSize), 0, C - 1);
@@ -129,7 +129,7 @@ namespace Game.Graphics
 			Vector3 res = new Vector3();
             res.x = (SquareSize / 2.0f) + r * SquareSize;
             res.y = (SquareSize / 2.0f) + c * SquareSize;
-			res = Camera.main.ScreenToWorldPoint(res);
+			res = _camera.ScreenToWorldPoint(res);
             res.z = 0;
             return res;
 		}
@@ -137,6 +137,7 @@ namespace Game.Graphics
 #if UNITY_EDITOR
 		private void OnDrawGizmos()
 		{
+			if(_camera == null) return;
 			for(int r = 0; r < R; ++r)
 			{
 				for(int c = 0; c < C; ++c)
@@ -148,7 +149,7 @@ namespace Game.Graphics
 				}
 			}
             var mousePos = Input.mousePosition;
-            mousePos = Camera.main.ScreenToWorldPoint(mousePos);
+            mousePos = _camera.ScreenToWorldPoint(mousePos);
             mousePos.z = 0;
             var sq = GetSquareAtWorldPosition(mousePos);
             Gizmos.color = Color.green;

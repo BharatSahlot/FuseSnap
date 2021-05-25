@@ -7,6 +7,7 @@ namespace Game.Circuit
     public class Terminal : MonoBehaviour
 	{
 		public bool ground = false;
+        public int player = 0;
 
 		private MonoEdge _component = null;
 		public MonoEdge Component => _component ??= GetComponentInParent<MonoEdge>();
