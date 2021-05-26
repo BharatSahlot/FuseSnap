@@ -5,6 +5,11 @@ using MessagePack;
 
 namespace Game.Map
 {
+    public enum EdgeTypes
+    {
+        Resistor, Battery, Fuse
+    }
+
     [MessagePackObject]
     public class MapEdgeData
     {
@@ -15,6 +20,15 @@ namespace Game.Map
         [Key(2)]
         public short Rotation { get; set; } // 1 => Positive above negative, -1 => Negative above positive
         [Key(3)]
+        public EdgeTypes EdgeType { get; set; }
+        [Key(4)]
+        public float? Voltage { get; set; }
+        [Key(5)]
+        public float? Resistance { get; set; }
+        [Key(6)]
+        public float? MaxCurrent { get; set; }
+
+        [IgnoreMember]
         public Edge Edge { get; set; }
     }
 
