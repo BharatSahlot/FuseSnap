@@ -63,14 +63,14 @@ namespace Game.Circuit
             Vector<float> x = Solver.Solve(nodes, vSources, _edgeList);
 			foreach(Terminal terminal in _terminals) terminal.Voltage = terminal.Node == 0 ? 0 : x[terminal.Node - 1];
             
-            foreach(IResistor resistor in _edgeList)
+            foreach(Resistor resistor in _edgeList)
             {
                 Edge edge = resistor as Edge;
                 if(resistor == null) continue;
                 if(edge[0].Node != edge[1].Node)
                 {
                     float current = (edge[0].Voltage - edge[1].Voltage) / resistor.CombinedResistance;
-                    foreach(IResistor res in _edgeList)
+                    foreach(Resistor res in _edgeList)
                     {
                         if(res != null && res.CombinedId == resistor.CombinedId) 
                         {
@@ -91,23 +91,23 @@ namespace Game.Circuit
 		private (int nodes, int vSources) AssignNodes()
         {
             var uf = new Game.DSA.UnionFind(_terminals.Count);
-            var resistors = new List<Edge>[_terminals.Count];
+            var resistors = new List<Resistor>[_terminals.Count];
 
             int vSources = 0;
             foreach(Edge edge in _edgeList)
             {
-                if(edge is IResistor)
+                if(edge is Resistor res)
                 {
                     foreach(var t in edge)
                     {
-                        if(resistors[t.Id] == null) resistors[t.Id] = new List<Edge>();
-                        if(t.Component is IResistor) resistors[t.Id].Add(edge);
+                        if(resistors[t.Id] == null) resistors[t.Id] = new List<Resistor>();
+                        if(t.Component is Resistor) resistors[t.Id].Add(res);
                     }
                 } else if(edge is Battery) edge.Id = vSources++;
             }
 
             int wc = 0;
-            foreach(IResistor res in _edgeList.Where(res => res is IResistor)) res.CombinedId = wc++;
+            foreach(Resistor res in _edgeList.Where(res => res is Resistor)) res.CombinedId = wc++;
 
             var wireUf = new Game.DSA.UnionFind(wc);
             foreach(var list in resistors)
@@ -121,7 +121,7 @@ namespace Game.Circuit
                 }
             }
 
-            foreach(IResistor res in _edgeList)
+            foreach(Resistor res in _edgeList)
             {
                 if(res == null) continue;
                 res.CombinedId = wireUf.FindSetCompressed(res.CombinedId);
