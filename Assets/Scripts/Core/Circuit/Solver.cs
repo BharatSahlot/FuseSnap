@@ -25,7 +25,7 @@ namespace Game.Circuit
 					if(u.Node != 0) StampVoltage(u.Node, battery.Id, 1);
 					if(v.Node != 0) StampVoltage(v.Node, battery.Id, -1);
 					StampVCurrent(battery.Id, battery.Voltage);
-				} else if(edge is Resistor resistor)
+				} else if(edge is IResistor resistor)
 				{
 					if(u.Node != 0) StampConductance(u.Node, u.Node, 1.0f / resistor.Resistance);
 					if(v.Node != 0) StampConductance(v.Node, v.Node, 1.0f / resistor.Resistance);

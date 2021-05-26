@@ -57,21 +57,25 @@ namespace Game.Circuit
 
         public void Solve()
         {
-            (int nodes, int wires, int vSources) = AssignNodes();
+            Regen();
+
+            (int nodes, int vSources) = AssignNodes();
             Vector<float> x = Solver.Solve(nodes, vSources, _edgeList);
 			foreach(Terminal terminal in _terminals) terminal.Voltage = terminal.Node == 0 ? 0 : x[terminal.Node - 1];
             
-            foreach(Resistor resistor in _edgeList)
+            foreach(IResistor resistor in _edgeList)
             {
+                Edge edge = resistor as Edge;
                 if(resistor == null) continue;
-                if(resistor[0].Node != resistor[1].Node)
+                if(edge[0].Node != edge[1].Node)
                 {
-                    float current = (resistor[0].Voltage - resistor[1].Voltage) / resistor.CombinedResistance;
-                    foreach(Resistor res in _edgeList)
+                    float current = (edge[0].Voltage - edge[1].Voltage) / resistor.CombinedResistance;
+                    foreach(IResistor res in _edgeList)
                     {
                         if(res != null && res.CombinedId == resistor.CombinedId) 
                         {
-                            res.SetCurrent(current * res.Direction);
+                            Edge e = res as Edge;
+                            e.SetCurrent(current * e.Direction);
                         }
                     }
                 }
@@ -84,28 +88,26 @@ namespace Game.Circuit
             // onSolve.Invoke();
         }
 
-		private (int nodes, int wires, int vSources) AssignNodes()
+		private (int nodes, int vSources) AssignNodes()
         {
             var uf = new Game.DSA.UnionFind(_terminals.Count);
-            var resistors = new List<Resistor>[_terminals.Count];
+            var resistors = new List<Edge>[_terminals.Count];
 
             int vSources = 0;
             foreach(Edge edge in _edgeList)
             {
-                if(edge is Resistor res)
+                if(edge is IResistor)
                 {
                     foreach(var t in edge)
                     {
-                        if(resistors[t.Id] == null) resistors[t.Id] = new List<Resistor>();
-                        if(t.Component is Resistor) resistors[t.Id].Add(res);
+                        if(resistors[t.Id] == null) resistors[t.Id] = new List<Edge>();
+                        if(t.Component is IResistor) resistors[t.Id].Add(edge);
                     }
                 } else if(edge is Battery) edge.Id = vSources++;
             }
 
-            AssignWireDirections(resistors);
-
             int wc = 0;
-            foreach(Resistor res in _edgeList.Where(res => res is Resistor)) res.CombinedId = wc++;
+            foreach(IResistor res in _edgeList.Where(res => res is IResistor)) res.CombinedId = wc++;
 
             var wireUf = new Game.DSA.UnionFind(wc);
             foreach(var list in resistors)
@@ -119,12 +121,11 @@ namespace Game.Circuit
                 }
             }
 
-            foreach(Resistor res in _edgeList)
+            foreach(IResistor res in _edgeList)
             {
                 if(res == null) continue;
-
-                res.CombinedId = wireUf.FindSetCompressed(res.Id);
-                res.CombinedResistance = wireUf.GetComponentSize(res.Id) * res.CombinedResistance;
+                res.CombinedId = wireUf.FindSetCompressed(res.CombinedId);
+                res.CombinedResistance = wireUf.GetComponentSize(res.CombinedId) * res.CombinedResistance;
             }
 
             foreach (Terminal terminal in _terminals)
@@ -133,7 +134,7 @@ namespace Game.Circuit
                 if (terminal.Edges.Count == 1) uf.UnionSet(0, terminal.Id);
             }
             foreach (Terminal terminal in _terminals) terminal.Node = uf.FindSetCompressed(terminal.Id);
-            return (uf.Components - 1, wireUf.Components, vSources);
+            return (uf.Components - 1, vSources);
         }
 
         
@@ -147,7 +148,8 @@ namespace Game.Circuit
             foreach(Edge edge in _edgeList)
             {
                 if(exclude.Contains(edge)) continue;
-                if(!(edge is Resistor))
+
+                if(edge is Fuse || edge is Battery) 
                 {
                     uf.UnionSet(edge[0].Id, 0);
                     uf.UnionSet(edge[1].Id, 0);
@@ -221,47 +223,6 @@ namespace Game.Circuit
                     }
                 }
             }
-        }
-
-        private void AssignWireDirections(List<Resistor>[] resistors)
-        {
-            HashSet<Resistor> visited = new HashSet<Resistor>();
-            void Bfs(Resistor res)
-            {
-                if (visited.Contains(res)) return;
-
-                res.Direction = 1;
-                var st = new Stack<Resistor>();
-                st.Push(res);
-                while (st.Count > 0)
-                {
-                    res = st.Pop();
-                    visited.Add(res);
-                    foreach(var t in res)
-                    {
-                        if(resistors[t.Id].Count == 2)
-                        {
-                            var other = resistors[t.Id].First(r => r != res);
-                            int dir = 1;
-                            if (res[1] == other[0] || res[0] == other[1]) dir = res.Direction;
-                            else dir = res.Direction * -1;
-
-                            if (visited.Contains(other))
-                            {
-                                if (other.Direction != dir)
-                                    Debug.LogError("[Resistor Direction Assign Error]: Same wire is assigned different directions.");
-                            }
-                            else
-                            {
-                                other.Direction = dir;
-                                st.Push(other);
-                                visited.Add(res);
-                            }
-                        }
-                    }
-                }
-            }
-            foreach (Resistor res in _edgeList) if(res != null) Bfs(res);
         }
     }
 }
