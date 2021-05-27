@@ -1,0 +1,55 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
+!_TAG_PROC_CWD	/home/bharat/Projects/FuseSnap/Assets/Scripts/Core/	//
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	5.9.0	/p5.9.20210110.0/
+AddComponent	Graphics/CircuitGrid.cs	/^		public void AddComponent(Bounds worldSpace, Bounds localSpace, Transform obj)$/;"	m	class:Game.Graphics.CircuitGrid
+Awake	Graphics/CircuitGrid.cs	/^		private void Awake()$/;"	m	class:Game.Graphics.CircuitGrid	file:
+C	Graphics/CircuitGrid.cs	/^		public int C { get; private set; }$/;"	p	class:Game.Graphics.CircuitGrid
+CircuitGrid	Graphics/CircuitGrid.cs	/^	public class CircuitGrid : MonoBehaviour$/;"	c	namespace:Game.Graphics
+Components	Circuit/IComponent.cs	/^        List<(IComponent comp, int node)> Components { get; set; }$/;"	p	class:Game.Circuit.Terminal
+DrawWire	Graphics/CircuitGrid.cs	/^		public bool DrawWire(Vector3 a, Vector3 b, LineRenderer line)$/;"	m	class:Game.Graphics.CircuitGrid
+FillBounds	Graphics/CircuitGrid.cs	/^		public void FillBounds(Bounds worldSpace, Bounds localSpace, Transform obj, int cost, int nCos/;"	m	class:Game.Graphics.CircuitGrid
+FillSquare	Graphics/CircuitGrid.cs	/^		private void FillSquare(int r, int c, int cost, int nCost)$/;"	m	class:Game.Graphics.CircuitGrid	file:
+FillSquare	Graphics/CircuitGrid.cs	/^        private void FillSquare(int r, int c) => FillSquare(r, c, _filledSquareCost, _filledNeig/;"	m	class:Game.Graphics.CircuitGrid	file:
+Game.Circuit	Circuit/IComponent.cs	/^namespace Game.Circuit$/;"	n
+Game.Circuit	Circuit/Labeller.cs	/^namespace Game.Circuit$/;"	n
+Game.Circuit	Circuit/Solver.cs	/^namespace Game.Circuit$/;"	n
+Game.Graphics	Graphics/CircuitGrid.cs	/^namespace Game.Graphics $/;"	n
+GetResistance	Circuit/IComponent.cs	/^        float GetResistance();$/;"	m	interface:Game.Circuit.IResistor
+GetSquareAtWorldPosition	Graphics/CircuitGrid.cs	/^		public (int r, int c) GetSquareAtWorldPosition(Vector3 worldPosition)$/;"	m	class:Game.Graphics.CircuitGrid	file:
+GetSquareWorldPosition	Graphics/CircuitGrid.cs	/^		public Vector3 GetSquareWorldPosition(int r, int c)$/;"	m	class:Game.Graphics.CircuitGrid
+GetVoltage	Circuit/IComponent.cs	/^        float GetVoltage();$/;"	m	interface:Game.Circuit.IVoltageSource
+Goals	Map/readme.md	/^# Goals$/;"	c
+IComponent	Circuit/IComponent.cs	/^    public interface IComponent$/;"	i	namespace:Game.Circuit
+IResistor	Circuit/IComponent.cs	/^    public interface IResistor : IComponent$/;"	i	namespace:Game.Circuit
+IVoltageSource	Circuit/IComponent.cs	/^    public interface IVoltageSource : IComponent$/;"	i	namespace:Game.Circuit
+Id	Circuit/IComponent.cs	/^        int Id { get; set; }$/;"	p	interface:Game.Circuit.IVoltageSource
+Instance	Graphics/CircuitGrid.cs	/^		public static CircuitGrid Instance => _instance;$/;"	f	class:Game.Graphics.CircuitGrid
+Label	Circuit/Labeller.cs	/^        public static void Label(IEnumerable<Terminal> terminals, Terminal ground)$/;"	m	class:Game.Circuit.Labeller
+Labeller	Circuit/Labeller.cs	/^    public class Labeller$/;"	c	namespace:Game.Circuit
+N1	Circuit/IComponent.cs	/^        int N1 { get; set; }$/;"	p	interface:Game.Circuit.IComponent
+N2	Circuit/IComponent.cs	/^        int N2 { get; set; }$/;"	p	interface:Game.Circuit.IComponent
+Node	Circuit/IComponent.cs	/^        int Node { get; set; }$/;"	p	class:Game.Circuit.Terminal
+OnDrawGizmos	Graphics/CircuitGrid.cs	/^		private void OnDrawGizmos()$/;"	m	class:Game.Graphics.CircuitGrid	file:
+R	Graphics/CircuitGrid.cs	/^		public int R { get; private set; }$/;"	p	class:Game.Graphics.CircuitGrid
+RemoveComponent	Graphics/CircuitGrid.cs	/^        public void RemoveComponent(Bounds worldSpace, Bounds localSpace, Transform obj)$/;"	m	class:Game.Graphics.CircuitGrid
+Solve	Circuit/Solver.cs	/^		public static Vector<float> Solve(int nodes, int vSources, IEnumerable<IComponent> components)$/;"	m	class:Game.Circuit.Solver
+Solver	Circuit/Solver.cs	/^    public static class Solver$/;"	c	namespace:Game.Circuit
+SquareSize	Graphics/CircuitGrid.cs	/^		public float SquareSize { get; private set; }$/;"	p	class:Game.Graphics.CircuitGrid
+Terminal	Circuit/IComponent.cs	/^    public class Terminal$/;"	c	namespace:Game.Circuit
+UnFillSquare	Graphics/CircuitGrid.cs	/^        private void UnFillSquare(int r, int c) => FillSquare(r, c, -_filledSquareCost, -_filled/;"	m	class:Game.Graphics.CircuitGrid	file:
+WSquareSize	Graphics/CircuitGrid.cs	/^		public float WSquareSize { get; private set; }$/;"	p	class:Game.Graphics.CircuitGrid
+_camera	Graphics/CircuitGrid.cs	/^        private Camera _camera;$/;"	f	class:Game.Graphics.CircuitGrid	file:
+_circuitLayerMask	Graphics/CircuitGrid.cs	/^		[SerializeField] private LayerMask _circuitLayerMask;$/;"	f	class:Game.Graphics.CircuitGrid	file:
+_filledNeighbourCost	Graphics/CircuitGrid.cs	/^		[SerializeField] private int _filledNeighbourCost = 1; \/\/ cost of putting wire on top of a s/;"	f	class:Game.Graphics.CircuitGrid	file:
+_filledSquareCost	Graphics/CircuitGrid.cs	/^		[SerializeField] private int _filledSquareCost = 2; \/\/ cost of putting wire on top of a fill/;"	f	class:Game.Graphics.CircuitGrid	file:
+_grid	Graphics/CircuitGrid.cs	/^		private int[,] _grid;$/;"	f	class:Game.Graphics.CircuitGrid	file:
+_instance	Graphics/CircuitGrid.cs	/^		private static CircuitGrid _instance = null;$/;"	f	class:Game.Graphics.CircuitGrid	file:
+_squareToScreenWidthRatio	Graphics/CircuitGrid.cs	/^		[SerializeField] private float _squareToScreenWidthRatio = 0.01f;$/;"	f	class:Game.Graphics.CircuitGrid	file:

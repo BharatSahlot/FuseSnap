@@ -1,12 +1,11 @@
 using MathNet.Numerics.LinearAlgebra;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Game.Circuit
 {
     public static class Solver
 	{
-		public static Vector<float> Solve(int nodes, int vSources, IEnumerable<Edge> edgeList)
+		public static Vector<float> Solve(int nodes, int vSources, IEnumerable<IComponent> components)
 		{
 			if(nodes < 1) return null;
 
@@ -16,23 +15,23 @@ namespace Game.Circuit
 			void StampVoltage(int r, int c, int val) => A[r - 1, nodes + c] = A[nodes + c, r - 1] = val;
 			void StampVCurrent(int id, float voltage) => Z[nodes + id] = voltage;
 
-			foreach(Edge edge in edgeList)
+			foreach(IComponent component in components)
 			{
-				Terminal u = edge[0];
-				Terminal v = edge[1];
-				if(edge is Battery battery)
+                int u = component.GetNode(1);
+                int v = component.GetNode(-1);
+				if(component is IVoltageSource source)
 				{
-					if(u.Node != 0) StampVoltage(u.Node, battery.Id, 1);
-					if(v.Node != 0) StampVoltage(v.Node, battery.Id, -1);
-					StampVCurrent(battery.Id, battery.Voltage);
-				} else if(edge is Resistor resistor)
+					if(u != 0) StampVoltage(u, source.VSourceId, 1);
+					if(v != 0) StampVoltage(v, source.VSourceId, -1);
+					StampVCurrent(source.VSourceId, source.Voltage);
+				} else if(component is IResistor resistor)
 				{
-					if(u.Node != 0) StampConductance(u.Node, u.Node, 1.0f / resistor.Resistance);
-					if(v.Node != 0) StampConductance(v.Node, v.Node, 1.0f / resistor.Resistance);
-					if(u.Node != 0 && v.Node != 0)
+					if(u != 0) StampConductance(u, u, 1.0f / resistor.Resistance);
+					if(v != 0) StampConductance(v, v, 1.0f / resistor.Resistance);
+					if(u != 0 && v != 0)
 					{
-						StampConductance(u.Node, v.Node, -1.0f / resistor.Resistance);
-						StampConductance(v.Node, u.Node, -1.0f / resistor.Resistance);
+						StampConductance(u, v, -1.0f / resistor.Resistance);
+						StampConductance(v, u, -1.0f / resistor.Resistance);
 					}
 				}
 			}
