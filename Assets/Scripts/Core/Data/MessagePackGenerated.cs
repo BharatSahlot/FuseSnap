@@ -49,15 +49,17 @@ namespace MessagePack.Resolvers
 
         static GeneratedResolverGetFormatterHelper()
         {
-            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(7)
+            lookup = new global::System.Collections.Generic.Dictionary<Type, int>(9)
             {
                 { typeof(global::System.Collections.Generic.List<global::Game.Data.Battery>), 0 },
                 { typeof(global::System.Collections.Generic.List<global::Game.Data.Fuse>), 1 },
-                { typeof(global::System.Collections.Generic.List<global::Game.Data.Wire>), 2 },
-                { typeof(global::Game.Data.Battery), 3 },
-                { typeof(global::Game.Data.Fuse), 4 },
-                { typeof(global::Game.Data.Map), 5 },
-                { typeof(global::Game.Data.Wire), 6 },
+                { typeof(global::System.Collections.Generic.List<global::Game.Data.Terminal>), 2 },
+                { typeof(global::System.Collections.Generic.List<global::Game.Data.Wire>), 3 },
+                { typeof(global::Game.Data.Battery), 4 },
+                { typeof(global::Game.Data.Fuse), 5 },
+                { typeof(global::Game.Data.Map), 6 },
+                { typeof(global::Game.Data.Terminal), 7 },
+                { typeof(global::Game.Data.Wire), 8 },
             };
         }
 
@@ -73,11 +75,13 @@ namespace MessagePack.Resolvers
             {
                 case 0: return new global::MessagePack.Formatters.ListFormatter<global::Game.Data.Battery>();
                 case 1: return new global::MessagePack.Formatters.ListFormatter<global::Game.Data.Fuse>();
-                case 2: return new global::MessagePack.Formatters.ListFormatter<global::Game.Data.Wire>();
-                case 3: return new MessagePack.Formatters.Game.Data.BatteryFormatter();
-                case 4: return new MessagePack.Formatters.Game.Data.FuseFormatter();
-                case 5: return new MessagePack.Formatters.Game.Data.MapFormatter();
-                case 6: return new MessagePack.Formatters.Game.Data.WireFormatter();
+                case 2: return new global::MessagePack.Formatters.ListFormatter<global::Game.Data.Terminal>();
+                case 3: return new global::MessagePack.Formatters.ListFormatter<global::Game.Data.Wire>();
+                case 4: return new MessagePack.Formatters.Game.Data.BatteryFormatter();
+                case 5: return new MessagePack.Formatters.Game.Data.FuseFormatter();
+                case 6: return new MessagePack.Formatters.Game.Data.MapFormatter();
+                case 7: return new MessagePack.Formatters.Game.Data.TerminalFormatter();
+                case 8: return new MessagePack.Formatters.Game.Data.WireFormatter();
                 default: return null;
             }
         }
@@ -130,11 +134,10 @@ namespace MessagePack.Formatters.Game.Data
             }
 
             value.OnBeforeSerialize();
-            writer.WriteArrayHeader(4);
+            writer.WriteArrayHeader(3);
             writer.Write(value.T1Id);
             writer.Write(value.T2Id);
             writer.Write(value.Voltage);
-            writer.Write(value.Rotation);
         }
 
         public global::Game.Data.Battery Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -149,7 +152,6 @@ namespace MessagePack.Formatters.Game.Data
             var __T1Id__ = default(int);
             var __T2Id__ = default(int);
             var __Voltage__ = default(float);
-            var __Rotation__ = default(float);
 
             for (int i = 0; i < length; i++)
             {
@@ -164,9 +166,6 @@ namespace MessagePack.Formatters.Game.Data
                     case 2:
                         __Voltage__ = reader.ReadSingle();
                         break;
-                    case 3:
-                        __Rotation__ = reader.ReadSingle();
-                        break;
                     default:
                         reader.Skip();
                         break;
@@ -175,7 +174,6 @@ namespace MessagePack.Formatters.Game.Data
 
             var ____result = new global::Game.Data.Battery();
             ____result.Voltage = __Voltage__;
-            ____result.Rotation = __Rotation__;
             ____result.OnAfterDeserialize();
             reader.Depth--;
             return ____result;
@@ -194,12 +192,11 @@ namespace MessagePack.Formatters.Game.Data
             }
 
             value.OnBeforeSerialize();
-            writer.WriteArrayHeader(5);
+            writer.WriteArrayHeader(4);
             writer.Write(value.T1Id);
             writer.Write(value.T2Id);
             writer.Write(value.Resistance);
             writer.Write(value.MaxCurrent);
-            writer.Write(value.Rotation);
         }
 
         public global::Game.Data.Fuse Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -215,7 +212,6 @@ namespace MessagePack.Formatters.Game.Data
             var __T2Id__ = default(int);
             var __Resistance__ = default(float);
             var __MaxCurrent__ = default(float);
-            var __Rotation__ = default(float);
 
             for (int i = 0; i < length; i++)
             {
@@ -233,9 +229,6 @@ namespace MessagePack.Formatters.Game.Data
                     case 3:
                         __MaxCurrent__ = reader.ReadSingle();
                         break;
-                    case 4:
-                        __Rotation__ = reader.ReadSingle();
-                        break;
                     default:
                         reader.Skip();
                         break;
@@ -245,7 +238,6 @@ namespace MessagePack.Formatters.Game.Data
             var ____result = new global::Game.Data.Fuse();
             ____result.Resistance = __Resistance__;
             ____result.MaxCurrent = __MaxCurrent__;
-            ____result.Rotation = __Rotation__;
             ____result.OnAfterDeserialize();
             reader.Depth--;
             return ____result;
@@ -265,12 +257,11 @@ namespace MessagePack.Formatters.Game.Data
 
             IFormatterResolver formatterResolver = options.Resolver;
             value.OnBeforeSerialize();
-            writer.WriteArrayHeader(5);
-            writer.Write(value.R);
-            writer.Write(value.C);
+            writer.WriteArrayHeader(4);
             formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Game.Data.Battery>>().Serialize(ref writer, value.Batteries, options);
             formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Game.Data.Fuse>>().Serialize(ref writer, value.Fuses, options);
             formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Game.Data.Wire>>().Serialize(ref writer, value.Wires, options);
+            formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Game.Data.Terminal>>().Serialize(ref writer, value.Terminals, options);
         }
 
         public global::Game.Data.Map Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -283,30 +274,26 @@ namespace MessagePack.Formatters.Game.Data
             options.Security.DepthStep(ref reader);
             IFormatterResolver formatterResolver = options.Resolver;
             var length = reader.ReadArrayHeader();
-            var __R__ = default(int);
-            var __C__ = default(int);
             var __Batteries__ = default(global::System.Collections.Generic.List<global::Game.Data.Battery>);
             var __Fuses__ = default(global::System.Collections.Generic.List<global::Game.Data.Fuse>);
             var __Wires__ = default(global::System.Collections.Generic.List<global::Game.Data.Wire>);
+            var __Terminals__ = default(global::System.Collections.Generic.List<global::Game.Data.Terminal>);
 
             for (int i = 0; i < length; i++)
             {
                 switch (i)
                 {
                     case 0:
-                        __R__ = reader.ReadInt32();
-                        break;
-                    case 1:
-                        __C__ = reader.ReadInt32();
-                        break;
-                    case 2:
                         __Batteries__ = formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Game.Data.Battery>>().Deserialize(ref reader, options);
                         break;
-                    case 3:
+                    case 1:
                         __Fuses__ = formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Game.Data.Fuse>>().Deserialize(ref reader, options);
                         break;
-                    case 4:
+                    case 2:
                         __Wires__ = formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Game.Data.Wire>>().Deserialize(ref reader, options);
+                        break;
+                    case 3:
+                        __Terminals__ = formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Game.Data.Terminal>>().Deserialize(ref reader, options);
                         break;
                     default:
                         reader.Skip();
@@ -315,12 +302,65 @@ namespace MessagePack.Formatters.Game.Data
             }
 
             var ____result = new global::Game.Data.Map();
-            ____result.R = __R__;
-            ____result.C = __C__;
             ____result.Batteries = __Batteries__;
             ____result.Fuses = __Fuses__;
             ____result.Wires = __Wires__;
+            ____result.Terminals = __Terminals__;
             ____result.OnAfterDeserialize();
+            reader.Depth--;
+            return ____result;
+        }
+    }
+
+    public sealed class TerminalFormatter : global::MessagePack.Formatters.IMessagePackFormatter<global::Game.Data.Terminal>
+    {
+
+        public void Serialize(ref MessagePackWriter writer, global::Game.Data.Terminal value, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (value == null)
+            {
+                writer.WriteNil();
+                return;
+            }
+
+            IFormatterResolver formatterResolver = options.Resolver;
+            writer.WriteArrayHeader(2);
+            writer.Write(value.Id);
+            formatterResolver.GetFormatterWithVerify<UnityEngine.Vector3>().Serialize(ref writer, value.WorldPosition, options);
+        }
+
+        public global::Game.Data.Terminal Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
+        {
+            if (reader.TryReadNil())
+            {
+                return null;
+            }
+
+            options.Security.DepthStep(ref reader);
+            IFormatterResolver formatterResolver = options.Resolver;
+            var length = reader.ReadArrayHeader();
+            var __Id__ = default(int);
+            var __WorldPosition__ = default(UnityEngine.Vector3);
+
+            for (int i = 0; i < length; i++)
+            {
+                switch (i)
+                {
+                    case 0:
+                        __Id__ = reader.ReadInt32();
+                        break;
+                    case 1:
+                        __WorldPosition__ = formatterResolver.GetFormatterWithVerify<UnityEngine.Vector3>().Deserialize(ref reader, options);
+                        break;
+                    default:
+                        reader.Skip();
+                        break;
+                }
+            }
+
+            var ____result = new global::Game.Data.Terminal();
+            ____result.Id = __Id__;
+            ____result.WorldPosition = __WorldPosition__;
             reader.Depth--;
             return ____result;
         }
