@@ -5,6 +5,13 @@ namespace Game.Circuit
 {
     public static class Solver
 	{
+        public static Vector<float> Solve(ITerminal ground, IEnumerable<ITerminal> terminals, IEnumerable<IComponent> components)
+        {
+            int nodes = Labeller.LabelTerminals(ground, terminals);
+            int vSources = Labeller.LabelVoltageSources(components);
+            return Solve(nodes, vSources, components);
+        }
+
 		public static Vector<float> Solve(int nodes, int vSources, IEnumerable<IComponent> components)
 		{
 			if(nodes < 1) return null;

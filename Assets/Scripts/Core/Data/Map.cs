@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Game.Circuit;
 using MessagePack;
 
@@ -88,8 +89,22 @@ namespace Game.Data
         [Key(1)] public List<Fuse> Fuses { get; set; }
         [Key(2)] public List<Wire> Wires { get; set; }
         [Key(3)] public List<Terminal> Terminals { get; set; }
+        [Key(4)] public int GroundId { get; set; }
 
+        [IgnoreMember] public Terminal Ground { get; private set; }
         [IgnoreMember] public Func<int, UnityEngine.Vector3> worldPosProvider;
+
+        public IEnumerable<IComponent> GetEdgeList()
+        {
+            foreach(var b in Batteries) yield return b;
+            foreach(var b in Fuses) yield return b;
+            foreach(var b in Wires) yield return b;
+        }
+
+        public void Solve()
+        {
+            Solver.Solve(Ground, Terminals, GetEdgeList());
+        }
 
         public void OnAfterDeserialize()
         {
@@ -99,6 +114,7 @@ namespace Game.Data
                 return res;
             }
 
+            Ground = Terminals.First(t => t.Id == GroundId);
             foreach(Battery battery in Batteries)
             {
                 battery.T1 = GetTerminal(battery.T1Id);
@@ -119,6 +135,8 @@ namespace Game.Data
         public void OnBeforeSerialize()
         {
             if(worldPosProvider == null) return;
+
+            GroundId = Ground.Id;
             foreach(Terminal t in Terminals) t.WorldPosition = worldPosProvider(t.Id);
         }
     }

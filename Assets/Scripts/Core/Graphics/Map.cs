@@ -31,17 +31,20 @@ namespace Game.Graphics
                 var b = Instantiate(_battery);
                 b.Battery = battery;
                 SetPositionRotation(b.transform, battery.T1.WorldPosition, battery.T2.WorldPosition, _battery.Height / 2);
+                b.Init();
             }
             foreach(Fuse fuse in map.Fuses)
             {
                 var b = Instantiate(_fuse);
                 b.Fuse = fuse;
                 SetPositionRotation(b.transform, fuse.T1.WorldPosition, fuse.T2.WorldPosition, _fuse.Height / 2);
+                b.Init();
             }
             foreach(Wire wire in map.Wires)
             {
                 var b = Instantiate(_wire);
                 b.Wire = wire;
+                b.Init();
             }
             map.worldPosProvider = GetTerminalPosition;
         }

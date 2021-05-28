@@ -257,11 +257,12 @@ namespace MessagePack.Formatters.Game.Data
 
             IFormatterResolver formatterResolver = options.Resolver;
             value.OnBeforeSerialize();
-            writer.WriteArrayHeader(4);
+            writer.WriteArrayHeader(5);
             formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Game.Data.Battery>>().Serialize(ref writer, value.Batteries, options);
             formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Game.Data.Fuse>>().Serialize(ref writer, value.Fuses, options);
             formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Game.Data.Wire>>().Serialize(ref writer, value.Wires, options);
             formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Game.Data.Terminal>>().Serialize(ref writer, value.Terminals, options);
+            writer.Write(value.GroundId);
         }
 
         public global::Game.Data.Map Deserialize(ref MessagePackReader reader, global::MessagePack.MessagePackSerializerOptions options)
@@ -278,6 +279,7 @@ namespace MessagePack.Formatters.Game.Data
             var __Fuses__ = default(global::System.Collections.Generic.List<global::Game.Data.Fuse>);
             var __Wires__ = default(global::System.Collections.Generic.List<global::Game.Data.Wire>);
             var __Terminals__ = default(global::System.Collections.Generic.List<global::Game.Data.Terminal>);
+            var __GroundId__ = default(int);
 
             for (int i = 0; i < length; i++)
             {
@@ -295,6 +297,9 @@ namespace MessagePack.Formatters.Game.Data
                     case 3:
                         __Terminals__ = formatterResolver.GetFormatterWithVerify<global::System.Collections.Generic.List<global::Game.Data.Terminal>>().Deserialize(ref reader, options);
                         break;
+                    case 4:
+                        __GroundId__ = reader.ReadInt32();
+                        break;
                     default:
                         reader.Skip();
                         break;
@@ -306,6 +311,7 @@ namespace MessagePack.Formatters.Game.Data
             ____result.Fuses = __Fuses__;
             ____result.Wires = __Wires__;
             ____result.Terminals = __Terminals__;
+            ____result.GroundId = __GroundId__;
             ____result.OnAfterDeserialize();
             reader.Depth--;
             return ____result;

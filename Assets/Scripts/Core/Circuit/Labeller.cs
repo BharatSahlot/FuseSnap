@@ -4,7 +4,7 @@ namespace Game.Circuit
 {
     public class Labeller
     {
-        public static int LabelITerminals(IEnumerable<ITerminal> terminals, ITerminal ground)
+        public static int LabelTerminals(ITerminal ground, IEnumerable<ITerminal> terminals)
         {
             foreach(ITerminal terminal in terminals) terminal.Node = -1;
 
