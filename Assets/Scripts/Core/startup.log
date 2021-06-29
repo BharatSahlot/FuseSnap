@@ -1,0 +1,168 @@
+
+
+times in msec
+ clock   self+sourced   self:  sourced script
+ clock   elapsed:              other lines
+
+000.015  000.015: --- NVIM STARTING ---
+000.557  000.542: locale set
+000.862  000.304: inits 1
+000.878  000.016: window checked
+000.910  000.032: parsing arguments
+000.952  000.042: expanding arguments
+000.990  000.039: inits 2
+001.579  000.589: init highlight
+001.581  000.002: waiting for UI
+002.484  000.903: done waiting for UI
+002.526  000.043: initialized screen early for UI
+004.434  001.647  001.647: sourcing /home/bharat/.local/share/nvim/site/autoload/plug.vim
+016.262  000.021  000.021: sourcing /home/bharat/.local/share/nvim/plugged/nvim-treesitter/ftdetect/gdscript.vim
+016.307  000.019  000.019: sourcing /home/bharat/.local/share/nvim/plugged/nvim-treesitter/ftdetect/gomod.vim
+016.382  000.030  000.030: sourcing /home/bharat/.local/share/nvim/plugged/nvim-treesitter/ftdetect/query.vim
+016.904  008.150  008.080: sourcing /squashfs-root/usr/share/nvim/runtime/filetype.vim
+017.370  000.049  000.049: sourcing /squashfs-root/usr/share/nvim/runtime/ftplugin.vim
+017.808  000.038  000.038: sourcing /squashfs-root/usr/share/nvim/runtime/indent.vim
+018.815  000.312  000.312: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/syncolor.vim
+019.202  000.855  000.543: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/synload.vim
+019.290  001.155  000.300: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/syntax.vim
+040.655  000.185  000.185: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/syncolor.vim
+041.221  038.582  027.358: sourcing /home/bharat/.config/nvim/init.vim
+041.226  000.118: sourcing vimrc file(s)
+041.553  000.036  000.036: sourcing /home/bharat/.local/share/nvim/plugged/nvim-web-devicons/plugin/nvim-web-devicons.vim
+043.416  001.809  001.809: sourcing /home/bharat/.local/share/nvim/plugged/vim-devicons/plugin/webdevicons.vim
+043.501  000.020  000.020: sourcing /home/bharat/.local/share/nvim/plugged/nvim-bufferline.lua/plugin/bufferline.vim
+044.190  000.634  000.634: sourcing /home/bharat/.local/share/nvim/plugged/fzf/plugin/fzf.vim
+045.041  000.775  000.775: sourcing /home/bharat/.local/share/nvim/plugged/fzf.vim/plugin/fzf.vim
+045.173  000.070  000.070: sourcing /home/bharat/.local/share/nvim/plugged/nvim-lspconfig/plugin/lspconfig.vim
+045.355  000.124  000.124: sourcing /home/bharat/.local/share/nvim/plugged/vim-commentary/plugin/commentary.vim
+046.493  001.082  001.082: sourcing /home/bharat/.local/share/nvim/plugged/tagbar/plugin/tagbar.vim
+046.884  000.174  000.174: sourcing /home/bharat/.local/share/nvim/plugged/vim-visual-multi/autoload/vm/plugs.vim
+047.324  000.141  000.141: sourcing /home/bharat/.local/share/nvim/plugged/vim-visual-multi/autoload/vm/maps.vim
+047.523  000.124  000.124: sourcing /home/bharat/.local/share/nvim/plugged/vim-visual-multi/autoload/vm/maps/all.vim
+048.710  002.137  001.699: sourcing /home/bharat/.local/share/nvim/plugged/vim-visual-multi/plugin/visual-multi.vim
+049.679  000.904  000.904: sourcing /home/bharat/.local/share/nvim/plugged/nvim-treesitter/plugin/nvim-treesitter.vim
+049.785  000.039  000.039: sourcing /home/bharat/.local/share/nvim/plugged/rainbow/plugin/rainbow_main.vim
+050.314  000.469  000.469: sourcing /home/bharat/.local/share/nvim/plugged/galaxyline.nvim/plugin/galaxyline.vim
+050.863  000.200  000.200: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/gzip.vim
+050.892  000.012  000.012: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/health.vim
+050.975  000.070  000.070: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/man.vim
+051.621  000.207  000.207: sourcing /squashfs-root/usr/share/nvim/runtime/pack/dist/opt/matchit/plugin/matchit.vim
+051.676  000.687  000.480: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/matchit.vim
+051.829  000.139  000.139: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/matchparen.vim
+052.249  000.403  000.403: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/netrwPlugin.vim
+052.409  000.124  000.124: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/rplugin.vim
+052.529  000.097  000.097: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/shada.vim
+052.594  000.025  000.025: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/spellfile.vim
+052.796  000.181  000.181: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/tarPlugin.vim
+053.053  000.146  000.146: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/tohtml.vim
+053.164  000.023  000.023: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/tutor.vim
+053.369  000.185  000.185: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/zipPlugin.vim
+053.389  001.770: loading plugins
+053.567  000.179: loading packages
+053.729  000.161: loading after plugins
+053.738  000.009: inits 3
+057.611  003.873: reading ShaDa
+060.860  000.050  000.050: sourcing /squashfs-root/usr/share/nvim/runtime/ftplugin/cs.vim
+062.344  000.090  000.090: sourcing /squashfs-root/usr/share/nvim/runtime/indent/cs.vim
+063.955  000.261  000.261: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/dtd.vim
+064.046  000.743  000.483: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/xml.vim
+064.140  000.026  000.026: sourcing /home/bharat/.local/share/nvim/plugged/oceanic-next/after/syntax/xml.vim
+064.578  001.682  000.913: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/cs.vim
+065.447  000.155  000.155: sourcing /home/bharat/.local/share/nvim/plugged/rainbow/autoload/rainbow_main.vim
+065.690  000.072  000.072: sourcing /home/bharat/.local/share/nvim/plugged/rainbow/autoload/rainbow.vim
+083.389  023.730: opening buffers
+083.418  000.029: BufEnter autocommands
+083.431  000.013: editing files in windows
+084.805  000.351  000.351: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/syncolor.vim
+085.984  000.217  000.217: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/syncolor.vim
+093.674  009.718  009.150: sourcing /home/bharat/.local/share/nvim/plugged/gruvbox/colors/gruvbox.vim
+097.579  000.113  000.113: sourcing /home/bharat/.local/share/nvim/plugged/vim-visual-multi/autoload/vm/themes.vim
+100.828  007.567: VimEnter autocommands
+100.832  000.003: UIEnter autocommands
+100.833  000.002: before starting main loop
+247.466  146.633: first screen update
+247.470  000.004: --- NVIM STARTED ---
+
+
+times in msec
+ clock   self+sourced   self:  sourced script
+ clock   elapsed:              other lines
+
+000.005  000.005: --- NVIM STARTING ---
+000.281  000.276: locale set
+000.587  000.306: inits 1
+000.602  000.015: window checked
+000.632  000.030: parsing arguments
+000.667  000.035: expanding arguments
+000.705  000.038: inits 2
+001.126  000.421: init highlight
+001.127  000.001: waiting for UI
+001.891  000.764: done waiting for UI
+001.905  000.014: initialized screen early for UI
+003.775  001.589  001.589: sourcing /home/bharat/.local/share/nvim/site/autoload/plug.vim
+014.521  000.016  000.016: sourcing /home/bharat/.local/share/nvim/plugged/nvim-treesitter/ftdetect/gdscript.vim
+014.553  000.012  000.012: sourcing /home/bharat/.local/share/nvim/plugged/nvim-treesitter/ftdetect/gomod.vim
+014.591  000.022  000.022: sourcing /home/bharat/.local/share/nvim/plugged/nvim-treesitter/ftdetect/query.vim
+014.990  007.235  007.185: sourcing /squashfs-root/usr/share/nvim/runtime/filetype.vim
+015.354  000.035  000.035: sourcing /squashfs-root/usr/share/nvim/runtime/ftplugin.vim
+015.714  000.031  000.031: sourcing /squashfs-root/usr/share/nvim/runtime/indent.vim
+016.478  000.240  000.240: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/syncolor.vim
+016.799  000.696  000.456: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/synload.vim
+016.876  000.909  000.213: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/syntax.vim
+035.808  000.152  000.152: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/syncolor.vim
+036.290  034.260  024.308: sourcing /home/bharat/.config/nvim/init.vim
+036.295  000.129: sourcing vimrc file(s)
+036.564  000.036  000.036: sourcing /home/bharat/.local/share/nvim/plugged/nvim-web-devicons/plugin/nvim-web-devicons.vim
+038.526  001.905  001.905: sourcing /home/bharat/.local/share/nvim/plugged/vim-devicons/plugin/webdevicons.vim
+038.608  000.019  000.019: sourcing /home/bharat/.local/share/nvim/plugged/nvim-bufferline.lua/plugin/bufferline.vim
+039.357  000.697  000.697: sourcing /home/bharat/.local/share/nvim/plugged/fzf/plugin/fzf.vim
+040.104  000.672  000.672: sourcing /home/bharat/.local/share/nvim/plugged/fzf.vim/plugin/fzf.vim
+040.236  000.070  000.070: sourcing /home/bharat/.local/share/nvim/plugged/nvim-lspconfig/plugin/lspconfig.vim
+040.417  000.124  000.124: sourcing /home/bharat/.local/share/nvim/plugged/vim-commentary/plugin/commentary.vim
+041.345  000.873  000.873: sourcing /home/bharat/.local/share/nvim/plugged/tagbar/plugin/tagbar.vim
+041.704  000.161  000.161: sourcing /home/bharat/.local/share/nvim/plugged/vim-visual-multi/autoload/vm/plugs.vim
+042.204  000.200  000.200: sourcing /home/bharat/.local/share/nvim/plugged/vim-visual-multi/autoload/vm/maps.vim
+042.448  000.100  000.100: sourcing /home/bharat/.local/share/nvim/plugged/vim-visual-multi/autoload/vm/maps/all.vim
+043.608  002.201  001.740: sourcing /home/bharat/.local/share/nvim/plugged/vim-visual-multi/plugin/visual-multi.vim
+044.465  000.792  000.792: sourcing /home/bharat/.local/share/nvim/plugged/nvim-treesitter/plugin/nvim-treesitter.vim
+044.570  000.039  000.039: sourcing /home/bharat/.local/share/nvim/plugged/rainbow/plugin/rainbow_main.vim
+045.072  000.443  000.443: sourcing /home/bharat/.local/share/nvim/plugged/galaxyline.nvim/plugin/galaxyline.vim
+045.738  000.263  000.263: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/gzip.vim
+045.769  000.013  000.013: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/health.vim
+045.852  000.070  000.070: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/man.vim
+046.479  000.199  000.199: sourcing /squashfs-root/usr/share/nvim/runtime/pack/dist/opt/matchit/plugin/matchit.vim
+046.536  000.669  000.469: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/matchit.vim
+046.695  000.145  000.145: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/matchparen.vim
+047.133  000.420  000.420: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/netrwPlugin.vim
+047.301  000.132  000.132: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/rplugin.vim
+047.426  000.100  000.100: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/shada.vim
+047.496  000.025  000.025: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/spellfile.vim
+047.662  000.144  000.144: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/tarPlugin.vim
+047.776  000.087  000.087: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/tohtml.vim
+047.822  000.021  000.021: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/tutor.vim
+048.012  000.171  000.171: sourcing /squashfs-root/usr/share/nvim/runtime/plugin/zipPlugin.vim
+048.034  001.608: loading plugins
+048.206  000.173: loading packages
+048.373  000.167: loading after plugins
+048.383  000.010: inits 3
+051.897  003.514: reading ShaDa
+055.087  000.084  000.084: sourcing /squashfs-root/usr/share/nvim/runtime/ftplugin/cs.vim
+056.644  000.071  000.071: sourcing /squashfs-root/usr/share/nvim/runtime/indent/cs.vim
+058.511  000.282  000.282: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/dtd.vim
+058.611  000.820  000.538: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/xml.vim
+058.702  000.024  000.024: sourcing /home/bharat/.local/share/nvim/plugged/oceanic-next/after/syntax/xml.vim
+059.203  001.832  000.987: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/cs.vim
+059.890  000.130  000.130: sourcing /home/bharat/.local/share/nvim/plugged/rainbow/autoload/rainbow_main.vim
+060.156  000.077  000.077: sourcing /home/bharat/.local/share/nvim/plugged/rainbow/autoload/rainbow.vim
+078.084  023.991: opening buffers
+078.130  000.046: BufEnter autocommands
+078.133  000.003: editing files in windows
+079.464  000.229  000.229: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/syncolor.vim
+080.658  000.206  000.206: sourcing /squashfs-root/usr/share/nvim/runtime/syntax/syncolor.vim
+088.289  009.630  009.196: sourcing /home/bharat/.local/share/nvim/plugged/gruvbox/colors/gruvbox.vim
+092.109  000.115  000.115: sourcing /home/bharat/.local/share/nvim/plugged/vim-visual-multi/autoload/vm/themes.vim
+095.389  007.511: VimEnter autocommands
+095.392  000.003: UIEnter autocommands
+095.394  000.002: before starting main loop
+241.913  146.519: first screen update
+241.918  000.005: --- NVIM STARTED ---

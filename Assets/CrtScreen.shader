@@ -94,10 +94,10 @@ Shader "Hidden/CrtScreen"
 
 				// move rows up
 				uv.y += _Y_Dist * round(i.uv.x * _Scale);
-            	// col *= tex2D(_PixelTex, TRANSFORM_TEX(uv, _PixelTex));
+            	col *= tex2D(_PixelTex, TRANSFORM_TEX(uv, _PixelTex));
 
 				// blend colors and control brightness
-				// col *= _Flicker;
+				col *= _Flicker;
 				return float4(col,1);
 			}
             ENDCG

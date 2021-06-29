@@ -28,7 +28,7 @@ public class ScreenEffect : MonoBehaviour
 		_flicker = Mathf.Lerp(_flicker, Random.Range(0.5f, 1.0f), 0.5f);
 
 		mat.SetFloat("_Offset", _offset);
-		// mat.SetFloat("_Flicker", _flicker);
+		mat.SetFloat("_Flicker", _flicker);
 		mat.SetFloat("_Gradient1_Offset", _g1Offset);
 		mat.SetFloat("_Gradient2_Offset", _g2Offset);
 		Graphics.Blit(source, destination, mat);
